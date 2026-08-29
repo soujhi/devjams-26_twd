@@ -1,0 +1,144 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+@import 'tailwindcss';
+
+html, body, #root { height: 100%; }
+
+:root {
+  /* ── Surfaces ── */
+  --ground:        #ECEEF2;
+  --surface:       #FFFFFF;
+  --surface-dim:   #F4F5F8;
+  --sunken:        #E8EBF0;
+  --rail:          #0E1319;
+  --rail-border:   rgba(255,255,255,0.07);
+
+  /* ── Ink ── */
+  --ink-0:   #0E1319;
+  --ink-1:   #232B36;
+  --ink-2:   #4A5563;
+  --ink-3:   #8896A4;
+  --ink-4:   #B5BEC8;
+  --ink-inv: #FFFFFF;
+
+  /* ── Brand amber — literal platelet colour ── */
+  --am-9:  #5C3800;
+  --am-8:  #7D4E04;
+  --am-7:  #9A6408;
+  --am-6:  #C8860D;
+  --am-5:  #D99820;
+  --am-4:  #E8B54A;
+  --am-3:  #F2CF82;
+  --am-2:  #F8E3B2;
+  --am-1:  #FDF5E0;
+
+  /* ── Status ── */
+  --cr-7:  #7A1F14;
+  --cr-6:  #C2321F;
+  --cr-4:  #E05A45;
+  --cr-1:  #FCE8E4;
+
+  --wa-7:  #7A4C06;
+  --wa-6:  #B5730A;
+  --wa-1:  #FDF0D4;
+
+  --st-7:  #104534;
+  --st-6:  #1C6848;
+  --st-1:  #E0F0E8;
+
+  --in-7:  #123D62;
+  --in-6:  #1A5280;
+  --in-1:  #E0EDF6;
+
+  /* ── Structure ── */
+  --border:      #D8DDE4;
+  --border-faint:#EDF0F4;
+  --border-rail: rgba(255,255,255,0.08);
+
+  /* ── Fonts ── */
+  --f-disp: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --f-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --f-data: 'IBM Plex Mono', ui-monospace, monospace;
+
+  /* ── Motion ── */
+  --ease:   cubic-bezier(.2,.68,.28,1);
+  --fast:   110ms;
+  --base:   200ms;
+  --slow:   400ms;
+
+  /* ── Shadow ── */
+  --sh-card:  0 1px 3px rgba(14,19,25,.06), 0 1px 2px rgba(14,19,25,.04);
+  --sh-raise: 0 3px 10px rgba(14,19,25,.09), 0 8px 28px rgba(14,19,25,.07);
+  --sh-modal: 0 20px 60px rgba(14,19,25,.22), 0 6px 16px rgba(14,19,25,.14);
+}
+
+/* ── Reset & base ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--f-body);
+  background: var(--ground);
+  color: var(--ink-1);
+  -webkit-font-smoothing: antialiased;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ── Scrollbars ─────────────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+/* ── Focus ──────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--in-6);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ── Type utilities ─────────────────────────────────────────────── */
+.eyebrow {
+  font-family: var(--f-disp);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  line-height: 1;
+}
+
+.data {
+  font-family: var(--f-data);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Animations ─────────────────────────────────────────────────── */
+@keyframes wipe-in {
+  from { clip-path: inset(0 100% 0 0); opacity: .7; }
+  to   { clip-path: inset(0 0 0 0);   opacity: 1; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0.35); }
+  70%  { box-shadow: 0 0 0 6px rgba(194, 50, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* ── Recharts overrides ─────────────────────────────────────────── */
+.recharts-cartesian-axis-tick-value {
+  font-family: var(--f-data) !important;
+  font-size: 10px !important;
+  fill: var(--ink-3) !important;
+}
