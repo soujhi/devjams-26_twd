@@ -762,32 +762,91 @@ function GlanceCard() {
 
 function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 13 }}>
-      {/* 3-Second Technician Shift Summary Banner — Ultimate Interpretability */}
+    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      {/* 3-Second Technician Decision Hero Banner */}
       <div style={{
         background: "var(--ink-0)",
         border: "1px solid rgba(255,255,255,0.12)",
-        borderRadius: 10, padding: "12px 18px",
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        boxShadow: "var(--sh-card)",
+        borderLeft: "4px solid var(--am-5)",
+        borderRadius: 12, padding: "18px 22px",
+        boxShadow: "0 6px 24px rgba(14,19,25,.25)",
+        display: "flex", flexDirection: "column", gap: 12,
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ fontSize: 14, color: "var(--am-4)" }}>⚡</span>
-          <div>
-            <div style={{ fontSize: 10, color: "rgba(255,255,255,.45)", textTransform: "uppercase", letterSpacing: ".12em", fontWeight: 700, fontFamily: "var(--f-disp)" }}>
-              3-SECOND SHIFT DECISION
-            </div>
-            <div style={{ fontSize: 13.5, color: "#fff", fontFamily: "var(--f-body)", marginTop: 2 }}>
-              Today's Action: <strong style={{ color: "var(--am-4)", fontWeight: 700 }}>COLLECT 16 units</strong> · Stock Status: <strong style={{ color: "var(--cr-4)", fontWeight: 700 }}>9 units expire tonight</strong> (3 need transfer)
-            </div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <span style={{
+              fontSize: 10, fontWeight: 700, fontFamily: "var(--f-disp)",
+              letterSpacing: ".14em", textTransform: "uppercase",
+              color: "var(--am-4)", background: "rgba(200,134,13,.18)",
+              padding: "3px 8px", borderRadius: 4, border: "1px solid rgba(200,134,13,.3)"
+            }}>⚡ SHIFT SUMMARY — 3-SECOND DECISION</span>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)" }}>
+              Tue 12 Sep · Shift Handover Active
+            </span>
           </div>
+          <span style={{ fontSize: 11, color: "var(--st-6)", fontFamily: "var(--f-body)", fontWeight: 500 }}>
+            ● System Status: Optimal (Conformal Model Live)
+          </span>
         </div>
-        <div style={{ display: "flex", gap: 6 }}>
-          <span style={{
-            fontSize: 10, fontWeight: 700, padding: "3px 8px", borderRadius: 4,
-            background: "rgba(200,134,13,.2)", color: "var(--am-4)", border: "1px solid rgba(200,134,13,.3)",
-            fontFamily: "var(--f-body)"
-          }}>67th percentile order point</span>
+
+        {/* 3 Metrics Row */}
+        <div style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr 1fr", gap: 12, marginTop: 4 }}>
+          {/* Card 1: Today's Action */}
+          <div style={{
+            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 8, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4
+          }}>
+            <span style={{ fontSize: 10, color: "rgba(255,255,255,.4)", fontFamily: "var(--f-disp)", textTransform: "uppercase", letterSpacing: ".1em" }}>
+              TODAY'S ACTION
+            </span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span style={{ fontFamily: "var(--f-disp)", fontSize: 24, fontWeight: 700, color: "var(--am-4)", lineHeight: 1 }}>
+                COLLECT 16
+              </span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)" }}>units</span>
+            </div>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)", marginTop: 2 }}>
+              Order point set to 67th percentile of forecast demand
+            </span>
+          </div>
+
+          {/* Card 2: Expiry Alert */}
+          <div style={{
+            background: "rgba(194,50,31,0.12)", border: "1px solid rgba(194,50,31,0.25)",
+            borderRadius: 8, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4
+          }}>
+            <span style={{ fontSize: 10, color: "var(--cr-4)", fontFamily: "var(--f-disp)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>
+              ⚠ EXPIRY ALERT
+            </span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span className="data" style={{ fontSize: 24, fontWeight: 600, color: "#fff", lineHeight: 1 }}>
+                9 units
+              </span>
+              <span style={{ fontSize: 12, color: "var(--cr-4)", fontFamily: "var(--f-body)", fontWeight: 600 }}>expire tonight</span>
+            </div>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.45)", fontFamily: "var(--f-body)" }}>
+              Forecast demand is 6 units → <strong>3 units need transfer</strong>
+            </span>
+          </div>
+
+          {/* Card 3: 7-Day Requirement */}
+          <div style={{
+            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 8, padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4
+          }}>
+            <span style={{ fontSize: 10, color: "rgba(255,255,255,.4)", fontFamily: "var(--f-disp)", textTransform: "uppercase", letterSpacing: ".1em" }}>
+              7-DAY DEMAND
+            </span>
+            <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
+              <span className="data" style={{ fontSize: 24, fontWeight: 600, color: "#fff", lineHeight: 1 }}>
+                108 units
+              </span>
+              <span style={{ fontSize: 12, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)" }}>total</span>
+            </div>
+            <span style={{ fontSize: 11, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)" }}>
+              Peak demand on Wednesday (18 units)
+            </span>
+          </div>
         </div>
       </div>
 
