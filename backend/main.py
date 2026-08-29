@@ -44,6 +44,19 @@ def root():
         "collection_plan": "http://localhost:8000/api/banks/ggh-chennai/plan?f=0.15"
     }
 
+@app.post("/auth/login")
+def login():
+    return {
+        "token": "mock-jwt-token-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9",
+        "token_type": "bearer",
+        "user": {
+            "id": "RK",
+            "name": "R. Kumar",
+            "role": "technician",
+            "bank_id": "ggh-chennai"
+        }
+    }
+
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "product": "PlateletIQ", "version": "1.0.0"}
