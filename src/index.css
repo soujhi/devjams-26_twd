@@ -9,8 +9,8 @@ html, body, #root { height: 100%; width: 100%; overflow: hidden; }
   --surface:       #FFFFFF; /* Cards, panels */
   --surface-dim:   #F8FAFC;
   --sunken:        #EAEDF1; /* Wells, table headers, inset areas */
-  --rail:          #0E1319; /* Dark rail sidebar */
-  --rail-border:   rgba(255,255,255,0.08);
+  --rail:          #FFFFFF; /* Light sidebar */
+  --rail-border:   #DDE2E8;
 
   /* ── Ink ── */
   --ink-0:   #10151C; /* Headings, primary numerals */

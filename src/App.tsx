@@ -87,7 +87,7 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
       padding: "20px 14px",
     }}>
       {/* Brand Header */}
-      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 20px 8px", borderBottom: "1px solid var(--rail-border)" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 8px 20px 8px", borderBottom: "1px solid var(--border-faint)" }}>
         <div style={{
           width: 32, height: 32, borderRadius: 8,
           background: "linear-gradient(135deg, var(--am-6), var(--am-4))",
@@ -95,20 +95,20 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
           fontWeight: 700, fontSize: 16, color: "#fff",
         }}>P</div>
         <div>
-          <div style={{ fontFamily: "var(--f-disp)", fontSize: 16, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>PlateletIQ</div>
-          <div style={{ fontSize: 10, color: "var(--am-4)", fontWeight: 600, letterSpacing: ".08em", textTransform: "uppercase" }}>Decision Support</div>
+          <div style={{ fontFamily: "var(--f-disp)", fontSize: 16, fontWeight: 700, color: "var(--ink-0)", letterSpacing: "-.01em" }}>PlateletIQ</div>
+          <div style={{ fontSize: 10, color: "var(--am-7)", fontWeight: 700, letterSpacing: ".08em", textTransform: "uppercase" }}>Decision Support</div>
         </div>
       </div>
 
       {/* Facility Card */}
       <div style={{
         margin: "16px 0", padding: "10px 12px",
-        background: "rgba(255,255,255,0.04)", border: "1px solid var(--rail-border)",
+        background: "var(--sunken)", border: "1px solid var(--border)",
         borderRadius: 8, display: "flex", flexDirection: "column", gap: 4
       }}>
-        <div style={{ fontSize: 9.5, color: "rgba(255,255,255,0.4)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>FACILITY</div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>Govt. General Hospital</div>
-        <div style={{ fontSize: 10.5, color: "var(--st-6)", display: "flex", alignItems: "center", gap: 4 }}>
+        <div style={{ fontSize: 9.5, color: "var(--ink-2)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>FACILITY</div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>Govt. General Hospital</div>
+        <div style={{ fontSize: 10.5, color: "var(--st-6)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>
           <span>●</span> Synced 2 min ago
         </div>
       </div>
@@ -124,13 +124,13 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
               style={{
                 display: "flex", alignItems: "center", gap: 10,
                 padding: "10px 12px", borderRadius: 8,
-                background: isActive ? "rgba(200,134,13,0.18)" : "transparent",
-                border: `1px solid ${isActive ? "rgba(200,134,13,0.35)" : "transparent"}`,
-                color: isActive ? "var(--am-4)" : "rgba(255,255,255,0.55)",
+                background: isActive ? "var(--am-1)" : "transparent",
+                border: `1px solid ${isActive ? "var(--am-2)" : "transparent"}`,
+                color: isActive ? "var(--am-7)" : "var(--ink-1)",
                 fontFamily: "var(--f-body)", fontSize: 13, fontWeight: isActive ? 600 : 500,
                 textAlign: "left", cursor: "pointer", transition: "all 120ms ease",
               }}
-              onMouseEnter={e => !isActive && (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+              onMouseEnter={e => !isActive && (e.currentTarget.style.background = "var(--sunken)")}
               onMouseLeave={e => !isActive && (e.currentTarget.style.background = "transparent")}
             >
               <span style={{ fontSize: 14 }}>{item.icon}</span>
@@ -142,7 +142,7 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
 
       {/* User Footer */}
       <div style={{
-        padding: "12px 10px 0 10px", borderTop: "1px solid var(--rail-border)",
+        padding: "12px 10px 0 10px", borderTop: "1px solid var(--border-faint)",
         display: "flex", alignItems: "center", gap: 10
       }}>
         <div style={{
@@ -152,8 +152,8 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
           fontWeight: 700, fontSize: 12, color: "#fff"
         }}>RK</div>
         <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "#fff" }}>R. Kumar</div>
-          <div style={{ fontSize: 10.5, color: "rgba(255,255,255,0.4)" }}>Shift Technician</div>
+          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>R. Kumar</div>
+          <div style={{ fontSize: 10.5, color: "var(--ink-2)" }}>Shift Technician</div>
         </div>
       </div>
     </aside>
