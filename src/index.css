@@ -4,60 +4,67 @@
 html, body, #root { height: 100%; width: 100%; overflow: hidden; }
 
 :root {
-  /* ── High-Tech Dark / Clinical Surfaces ── */
-  --ground:        #0B0E14;
-  --surface:       #121721;
-  --surface-dim:   #181F2C;
-  --sunken:        #0E121B;
-  --rail:          #080A0E;
+  /* ── Surfaces (Cool Clinical Grey-White, not cream) ── */
+  --ground:        #F4F6F8; /* Page background */
+  --surface:       #FFFFFF; /* Cards, panels */
+  --surface-dim:   #F8FAFC;
+  --sunken:        #EAEDF1; /* Wells, table headers, inset areas */
+  --rail:          #0E1319; /* Dark rail sidebar */
   --rail-border:   rgba(255,255,255,0.08);
 
   /* ── Ink ── */
-  --ink-0:   #FFFFFF;
-  --ink-1:   #E2E8F0;
-  --ink-2:   #94A3B8;
-  --ink-3:   #64748B;
-  --ink-4:   #475569;
+  --ink-0:   #10151C; /* Headings, primary numerals */
+  --ink-1:   #2B3440; /* Body copy */
+  --ink-2:   #5B6672; /* Labels, captions, units */
+  --ink-3:   #98A2AE; /* Disabled, placeholder */
+  --ink-4:   #C6CDD5;
 
-  /* ── Brand Amber ── */
-  --am-6:  #D97706;
-  --am-5:  #F59E0B;
-  --am-4:  #FBBF24;
-  --am-3:  #FDE68A;
-  --am-1:  rgba(245, 158, 11, 0.12);
+  /* ── Brand Amber — literal platelet colour ── */
+  --am-9:  #6B4405;
+  --am-7:  #9A6408;
+  --am-6:  #C8860D; /* PRIMARY BRAND */
+  --am-5:  #D99820;
+  --am-4:  #E8B54A;
+  --am-2:  #F7E3B4;
+  --am-1:  #FDF7E8;
 
   /* ── Status ── */
-  --cr-6:  #EF4444;
-  --cr-4:  #F87171;
-  --cr-1:  rgba(239, 68, 68, 0.15);
+  --cr-7:  #8E2416;
+  --cr-6:  #C2321F; /* Expires today, shortage */
+  --cr-4:  #E05A45;
+  --cr-1:  #FBE6E2;
 
-  --wa-6:  #F59E0B;
-  --wa-1:  rgba(245, 158, 11, 0.15);
+  --wa-7:  #7A4C06;
+  --wa-6:  #B5730A; /* Expires tomorrow, review needed */
+  --wa-1:  #FCEFD6;
 
-  --st-6:  #10B981;
-  --st-1:  rgba(16, 185, 129, 0.15);
+  --st-7:  #14543A;
+  --st-6:  #1F6F4A; /* Healthy stock, concordant */
+  --st-1:  #E1F0E8;
 
-  --in-6:  #3B82F6;
-  --in-1:  rgba(59, 130, 246, 0.15);
+  --in-7:  #143C59;
+  --in-6:  #1F5F8B; /* Forecast, model output */
+  --in-1:  #E2EEF6;
 
   /* ── Structure ── */
-  --border:      rgba(255,255,255,0.1);
-  --border-faint:rgba(255,255,255,0.05);
+  --border:      #DDE2E8;
+  --border-faint:#EDF0F3;
+  --line-strong: #C6CDD5;
 
   /* ── Fonts ── */
-  --f-disp: 'IBM Plex Sans Condensed', sans-serif;
-  --f-body: 'IBM Plex Sans', sans-serif;
-  --f-data: 'IBM Plex Mono', monospace;
+  --f-disp: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
+  --f-body: 'IBM Plex Sans', system-ui, sans-serif;
+  --f-data: 'IBM Plex Mono', ui-monospace, monospace;
 
   /* ── Motion ── */
   --ease:   cubic-bezier(.2,.68,.28,1);
-  --fast:   110ms;
+  --fast:   120ms;
   --base:   200ms;
 
-  /* ── Glowing Shadows ── */
-  --sh-card:  0 4px 20px rgba(0,0,0,0.3);
-  --sh-glow:  0 0 25px rgba(245,158,11,0.18);
-  --sh-red:   0 0 25px rgba(239,68,68,0.2);
+  /* ── Shadows ── */
+  --sh-card:  0 1px 3px rgba(16,21,28,0.05), 0 1px 2px rgba(16,21,28,0.04);
+  --sh-raise: 0 3px 10px rgba(16,21,28,0.07), 0 8px 20px rgba(16,21,28,0.06);
+  --sh-modal: 0 12px 40px rgba(16,21,28,0.18);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -68,6 +75,7 @@ body {
   color: var(--ink-1);
   -webkit-font-smoothing: antialiased;
   font-size: 13.5px;
+  line-height: 1.5;
 }
 
 .data {
@@ -79,19 +87,13 @@ body {
   font-family: var(--f-disp);
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: .15em;
+  letter-spacing: .14em;
   text-transform: uppercase;
-  color: var(--ink-3);
+  color: var(--ink-2);
 }
 
 @keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
-  70%  { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-}
-
-@keyframes glow-pulse {
-  0%   { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4)); }
-  50%  { filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.8)); }
-  100% { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4)); }
+  0%   { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0.35); }
+  70%  { box-shadow: 0 0 0 6px rgba(194, 50, 31, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0); }
 }
