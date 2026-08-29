@@ -12,9 +12,13 @@ from .services.forecast import generate_7day_forecast, generate_recommendation
 from .services.optimizer import generate_collection_plan
 from .services.requisition import get_requisitions
 
+from .pipeline.data_loader import load_research_dataset
+from .pipeline.lasso_model import evaluate_predictions, get_forecast_horizon_data
+from .pipeline.inventory_simulator import run_inventory_simulation
+
 app = FastAPI(
     title="PlateletIQ API",
-    description="Predictive Platelet Inventory Management Decision Support API",
+    description="Predictive Platelet Inventory Management Decision Support API backed by validated LASSO ML Pipeline",
     version="1.0.0"
 )
 
@@ -60,6 +64,34 @@ def login():
 @app.get("/api/health")
 def health_check():
     return {"status": "ok", "product": "PlateletIQ", "version": "1.0.0"}
+
+@app.get("/api/pipeline/benchmark")
+def get_pipeline_benchmark():
+    """
+    Returns the exact research simulation benchmark table:
+    - 7-day MA (current practice): waste 6.33%, shortage 7.40%
+    - Production point forecast: waste 3.25%, shortage 3.04%
+    - Conformal q67: waste 4.66%, shortage 4.68%
+    """
+    return run_inventory_simulation()
+
+@app.get("/api/pipeline/metrics")
+def get_pipeline_metrics():
+    """
+    Returns validated model metrics (MAPE, MASE, Quantile coverage).
+    """
+    df = load_research_dataset()
+    return evaluate_predictions(df)
+
+@app.get("/api/pipeline/predictions")
+def get_pipeline_predictions(limit: int = Query(30, ge=1, le=1000)):
+    """
+    Returns out-of-sample prediction trajectories from the research dataset.
+    """
+    df = load_research_dataset()
+    recent = df.tail(limit).copy()
+    recent['date'] = recent['date'].dt.strftime('%Y-%m-%d')
+    return recent.to_dict(orient='records')
 
 @app.get("/api/banks/{bank_id}/config", response_model=BankConfig)
 def get_bank_config(bank_id: str):
