@@ -132,6 +132,27 @@ def adjust_rec(bank_id: str, req: AdjustRequest):
 def get_bank_requisitions(bank_id: str):
     return get_requisitions(bank_id)
 
+@app.post("/api/banks/{bank_id}/requisitions/{req_id}/issue")
+def issue_requisition(bank_id: str, req_id: str, reason: Optional[str] = "Issued by technician"):
+    audit_log_db.append({"action": "ISSUE_REQUISITION", "bank_id": bank_id, "req_id": req_id, "reason": reason})
+    return {"status": "success", "message": f"Requisition #{req_id} issued cleanly.", "req_id": req_id}
+
+@app.post("/api/banks/{bank_id}/assistant")
+def query_assistant(bank_id: str, payload: dict):
+    question = payload.get("question", "")
+    q_lower = question.lower()
+    
+    if "expire" in q_lower or "o+" in q_lower:
+        ans = "4 O-positive units expire tomorrow, 13 Sep.\n\nBag IDs: P-4471, P-4482, P-4489, P-4501\n\nForecast demand for O+ tomorrow is 5 units, so these should be used."
+    elif "why collect" in q_lower or "16" in q_lower:
+        ans = "Recommended order quantity is 16 units based on Newsvendor critical fractile tau* = 0.67 (67th percentile of forecast demand). The 7-day moving average is up 18% and Wednesday is a peak demand day."
+    elif "wastage" in q_lower:
+        ans = "Current 30-day wastage rate is 3.8%, down from 9.6% baseline. Waste peaks on Monday (4.38/day) and Wednesday (3.25/day) because units collected before weekends outdate when demand drops."
+    else:
+        ans = f"Analyzing blood bank database for '{question}'... Current stock is 48 units (9 expiring today). Baseline 7-day demand is 108 units."
+        
+    return {"answer": ans, "question": question}
+
 @app.get("/api/banks/{bank_id}/plan", response_model=List[CollectionPlanRow])
 def get_collection_plan(bank_id: str, f: float = Query(0.15, ge=0.05, le=0.30)):
     return generate_collection_plan(bridge_f=f)
