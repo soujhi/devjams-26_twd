@@ -1,77 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
 
-html, body, #root { height: 100%; }
+html, body, #root { height: 100%; width: 100%; overflow: hidden; }
 
 :root {
-  /* ── Surfaces ── */
-  --ground:        #EBEEF3;
-  --surface:       #FFFFFF;
-  --surface-dim:   #F3F5F8;
-  --sunken:        #E5E9EF;
-  --rail:          #0C1015;
+  /* ── High-Tech Dark / Clinical Surfaces ── */
+  --ground:        #0B0E14;
+  --surface:       #121721;
+  --surface-dim:   #181F2C;
+  --sunken:        #0E121B;
+  --rail:          #080A0E;
   --rail-border:   rgba(255,255,255,0.08);
 
   /* ── Ink ── */
-  --ink-0:   #0C1015;
-  --ink-1:   #1E2631;
-  --ink-2:   #424D5B;
-  --ink-3:   #7F8E9D;
-  --ink-4:   #ACB6C2;
-  --ink-inv: #FFFFFF;
+  --ink-0:   #FFFFFF;
+  --ink-1:   #E2E8F0;
+  --ink-2:   #94A3B8;
+  --ink-3:   #64748B;
+  --ink-4:   #475569;
 
-  /* ── Brand amber — literal platelet colour ── */
-  --am-9:  #5C3800;
-  --am-8:  #7D4E04;
-  --am-7:  #9A6408;
-  --am-6:  #C8860D;
-  --am-5:  #D99820;
-  --am-4:  #E8B54A;
-  --am-3:  #F2CF82;
-  --am-2:  #F8E3B2;
-  --am-1:  #FDF5E0;
+  /* ── Brand Amber ── */
+  --am-6:  #D97706;
+  --am-5:  #F59E0B;
+  --am-4:  #FBBF24;
+  --am-3:  #FDE68A;
+  --am-1:  rgba(245, 158, 11, 0.12);
 
   /* ── Status ── */
-  --cr-7:  #7A1F14;
-  --cr-6:  #C2321F;
-  --cr-4:  #E05A45;
-  --cr-1:  #FCE8E4;
+  --cr-6:  #EF4444;
+  --cr-4:  #F87171;
+  --cr-1:  rgba(239, 68, 68, 0.15);
 
-  --wa-7:  #7A4C06;
-  --wa-6:  #B5730A;
-  --wa-1:  #FDF0D4;
+  --wa-6:  #F59E0B;
+  --wa-1:  rgba(245, 158, 11, 0.15);
 
-  --st-7:  #104534;
-  --st-6:  #1C6848;
-  --st-1:  #E0F0E8;
+  --st-6:  #10B981;
+  --st-1:  rgba(16, 185, 129, 0.15);
 
-  --in-7:  #123D62;
-  --in-6:  #1A5280;
-  --in-1:  #E0EDF6;
+  --in-6:  #3B82F6;
+  --in-1:  rgba(59, 130, 246, 0.15);
 
   /* ── Structure ── */
-  --border:      #D3D9E2;
-  --border-faint:#EAEFF5;
-  --border-rail: rgba(255,255,255,0.09);
+  --border:      rgba(255,255,255,0.1);
+  --border-faint:rgba(255,255,255,0.05);
 
   /* ── Fonts ── */
-  --f-disp: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
-  --f-body: 'IBM Plex Sans', system-ui, sans-serif;
-  --f-data: 'IBM Plex Mono', ui-monospace, monospace;
+  --f-disp: 'IBM Plex Sans Condensed', sans-serif;
+  --f-body: 'IBM Plex Sans', sans-serif;
+  --f-data: 'IBM Plex Mono', monospace;
 
   /* ── Motion ── */
   --ease:   cubic-bezier(.2,.68,.28,1);
   --fast:   110ms;
   --base:   200ms;
-  --slow:   400ms;
 
-  /* ── Shadow ── */
-  --sh-card:  0 2px 6px rgba(12,16,21,.05), 0 1px 2px rgba(12,16,21,.03);
-  --sh-raise: 0 6px 20px rgba(12,16,21,.08), 0 2px 6px rgba(12,16,21,.04);
-  --sh-modal: 0 24px 64px rgba(12,16,21,.24), 0 8px 20px rgba(12,16,21,.16);
+  /* ── Glowing Shadows ── */
+  --sh-card:  0 4px 20px rgba(0,0,0,0.3);
+  --sh-glow:  0 0 25px rgba(245,158,11,0.18);
+  --sh-red:   0 0 25px rgba(239,68,68,0.2);
 }
 
-/* ── Reset & base ──────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -80,31 +68,6 @@ body {
   color: var(--ink-1);
   -webkit-font-smoothing: antialiased;
   font-size: 13.5px;
-  line-height: 1.5;
-}
-
-/* ── Scrollbars ─────────────────────────────────────────────────── */
-* { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-
-/* ── Focus ──────────────────────────────────────────────────────── */
-:focus-visible {
-  outline: 2px solid var(--in-6);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ── Type utilities ─────────────────────────────────────────────── */
-.eyebrow {
-  font-family: var(--f-disp);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  line-height: 1;
 }
 
 .data {
@@ -112,33 +75,23 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Animations ─────────────────────────────────────────────────── */
-@keyframes wipe-in {
-  from { clip-path: inset(0 100% 0 0); opacity: .7; }
-  to   { clip-path: inset(0 0 0 0);   opacity: 1; }
-}
-
-@keyframes rise {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
+.eyebrow {
+  font-family: var(--f-disp);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--ink-3);
 }
 
 @keyframes pulse-ring {
-  0%   { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0.35); }
-  70%  { box-shadow: 0 0 0 6px rgba(194, 50, 31, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(194, 50, 31, 0); }
+  0%   { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70%  { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    transition-duration: .01ms !important;
-  }
-}
-
-/* ── Recharts overrides ─────────────────────────────────────────── */
-.recharts-cartesian-axis-tick-value {
-  font-family: var(--f-data) !important;
-  font-size: 10px !important;
-  fill: var(--ink-3) !important;
+@keyframes glow-pulse {
+  0%   { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4)); }
+  50%  { filter: drop-shadow(0 0 12px rgba(245, 158, 11, 0.8)); }
+  100% { filter: drop-shadow(0 0 4px rgba(245, 158, 11, 0.4)); }
 }
