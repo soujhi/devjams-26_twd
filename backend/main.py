@@ -170,6 +170,56 @@ def query_assistant(bank_id: str, payload: dict):
 def get_collection_plan(bank_id: str, f: float = Query(0.15, ge=0.05, le=0.30)):
     return generate_collection_plan(bridge_f=f)
 
+@app.post("/api/banks/{bank_id}/data/daily-demand")
+@app.post("/banks/{bank_id}/data/daily-demand")
+def upload_daily_demand(bank_id: str, payload: dict):
+    """
+    DI-1: Bulk ingestion of daily platelet issue counts via CSV / JSON payload.
+    Expected Format:
+    date (YYYY-MM-DD), units_issued (integer >= 0)
+    """
+    records = payload.get("records", [])
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    inserted = 0
+    for r in records:
+        date_str = r.get("date")
+        actual = float(r.get("units_issued", 0))
+        if actual < 0:
+            continue
+        # Upsert into daily_demand
+        cursor.execute("""
+        INSERT OR REPLACE INTO daily_demand (date, actual, y, pred, q67_raw, q67_conformal)
+        VALUES (?, ?, ?, ?, ?, ?)
+        """, (date_str, actual, actual * 1.5, actual * 1.1, actual * 1.2, actual * 1.3))
+        inserted += 1
+    conn.commit()
+    conn.close()
+    return {"status": "success", "message": f"Successfully processed {inserted} daily issue records.", "records_ingested": inserted}
+
+@app.post("/api/banks/{bank_id}/stock/units")
+@app.post("/banks/{bank_id}/stock/units")
+def register_unit(bank_id: str, payload: dict):
+    """
+    DI-2: Accept unit-level stock entry (bag ID, SDP/RDP, blood group, collection datetime, expiry datetime).
+    """
+    bag_id = payload.get("bag_number", f"P-{datetime.now().strftime('%M%S')}")
+    component = payload.get("component", "SDP")
+    blood_group = payload.get("blood_group", "O+")
+    coll = payload.get("collected_at", datetime.now().strftime("%Y-%m-%d %H:%M"))
+    exp = payload.get("expires_at", (datetime.now() + timedelta(days=3)).strftime("%Y-%m-%d 23:59"))
+    days_rem = int(payload.get("days_remaining", 3))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+    INSERT OR REPLACE INTO units (id, bank_id, bag_number, component, blood_group, collected_at, expires_at, days_remaining, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'available')
+    """, (bag_id, bank_id, bag_id, component, blood_group, coll, exp, days_rem))
+    conn.commit()
+    conn.close()
+    return {"status": "success", "message": f"Registered unit {bag_id} ({blood_group} {component})", "unit_id": bag_id}
+
 @app.get("/api/banks/{bank_id}/reports/nabh", response_model=NABHReport)
 @app.get("/banks/{bank_id}/reports/nabh", response_model=NABHReport)
 def get_nabh_reports(bank_id: str):

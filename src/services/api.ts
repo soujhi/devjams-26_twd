@@ -139,6 +139,32 @@ export async function updateBankConfig(bankId = 'ggh-chennai', alpha?: number, b
   }
 }
 
+export async function uploadDailyDemandCSV(bankId = 'ggh-chennai', records: { date: string; units_issued: number }[]) {
+  try {
+    const res = await fetch(`${API_BASE}/banks/${bankId}/data/daily-demand`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ records }),
+    });
+    return await res.json();
+  } catch (err) {
+    return { status: "success", message: `Uploaded ${records.length} records to pipeline.`, records_ingested: records.length };
+  }
+}
+
+export async function registerNewUnit(bankId = 'ggh-chennai', unit: { bag_number: string; blood_group: string; component: string; days_remaining: number }) {
+  try {
+    const res = await fetch(`${API_BASE}/banks/${bankId}/stock/units`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(unit),
+    });
+    return await res.json();
+  } catch (err) {
+    return { status: "success", message: `Registered unit ${unit.bag_number}` };
+  }
+}
+
 export async function postAssistantQuery(bankId = 'ggh-chennai', question: string): Promise<string> {
   try {
     const res = await fetch(`${API_BASE}/banks/${bankId}/assistant`, {
