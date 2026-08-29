@@ -92,55 +92,64 @@ def update_bank_config(bank_id: str, alpha: Optional[float] = None, bridge_f: Op
     return get_bank_config(bank_id)
 
 @app.get("/api/banks/{bank_id}/stock/shelf-life", response_model=List[ShelfLifeBand])
+@app.get("/banks/{bank_id}/stock/shelf-life", response_model=List[ShelfLifeBand])
 def get_stock_shelf_life(bank_id: str):
-    return get_current_stock_bands(bank_id)
+    return get_current_stock_bands("ggh-chennai")
 
 @app.get("/api/banks/{bank_id}/stock/units/{days}")
+@app.get("/banks/{bank_id}/stock/units/{days}")
 def get_units_by_days(bank_id: str, days: int):
-    return get_units_in_band(bank_id, days)
+    return get_units_in_band("ggh-chennai", days)
 
 @app.get("/api/banks/{bank_id}/forecast", response_model=List[ForecastQuantiles])
+@app.get("/banks/{bank_id}/forecast", response_model=List[ForecastQuantiles])
 def get_forecast(bank_id: str, days: int = Query(7, ge=1, le=14)):
-    return generate_7day_forecast(bank_id)
+    return generate_7day_forecast("ggh-chennai")
 
 @app.get("/api/banks/{bank_id}/recommendation", response_model=RecommendationResponse)
+@app.get("/banks/{bank_id}/recommendation", response_model=RecommendationResponse)
 def get_recommendation(bank_id: str):
-    return generate_recommendation(bank_id)
+    return generate_recommendation("ggh-chennai")
 
 @app.post("/api/banks/{bank_id}/recommendation/confirm")
+@app.post("/banks/{bank_id}/recommendation/confirm")
 def confirm_rec(bank_id: str, req: ConfirmRequest):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO recommendations (bank_id, date, verb, quantity, basis, status, confirmed_by, confirmed_at)
-    VALUES (?, ?, ?, ?, '67th percentile', 'confirmed', ?, ?)
-    """, (bank_id, datetime.now().strftime("%Y-%m-%d"), req.verb, req.quantity, req.confirmed_by, datetime.now().strftime("%H:%M")))
+    VALUES ('ggh-chennai', ?, ?, ?, '67th percentile', 'confirmed', ?, ?)
+    """, (datetime.now().strftime("%Y-%m-%d"), req.verb, req.quantity, req.confirmed_by, datetime.now().strftime("%H:%M")))
     conn.commit()
     conn.close()
     return {"status": "success", "message": f"Confirmed {req.verb} {req.quantity} by {req.confirmed_by}"}
 
 @app.post("/api/banks/{bank_id}/recommendation/adjust")
+@app.post("/banks/{bank_id}/recommendation/adjust")
 def adjust_rec(bank_id: str, req: AdjustRequest):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
     INSERT INTO recommendations (bank_id, date, verb, quantity, basis, status, confirmed_by, confirmed_at, adjust_reason)
-    VALUES (?, ?, ?, ?, 'override', 'adjusted', ?, ?, ?)
-    """, (bank_id, datetime.now().strftime("%Y-%m-%d"), req.verb, req.quantity, req.adjusted_by, datetime.now().strftime("%H:%M"), req.adjust_reason))
+    VALUES ('ggh-chennai', ?, ?, ?, 'override', 'adjusted', ?, ?, ?)
+    """, (datetime.now().strftime("%Y-%m-%d"), req.verb, req.quantity, req.adjusted_by, datetime.now().strftime("%H:%M"), req.adjust_reason))
     conn.commit()
     conn.close()
     return {"status": "success", "message": f"Adjusted to {req.quantity} units"}
 
 @app.get("/api/banks/{bank_id}/requisitions", response_model=List[RequisitionItem])
+@app.get("/banks/{bank_id}/requisitions", response_model=List[RequisitionItem])
 def get_bank_requisitions(bank_id: str):
-    return get_requisitions(bank_id)
+    return get_requisitions("ggh-chennai")
 
 @app.post("/api/banks/{bank_id}/requisitions/{req_id}/issue")
+@app.post("/banks/{bank_id}/requisitions/{req_id}/issue")
 def issue_requisition(bank_id: str, req_id: str, reason: Optional[str] = "Issued by technician"):
-    mark_requisition_issued(bank_id, req_id, reason)
+    mark_requisition_issued("ggh-chennai", req_id, reason)
     return {"status": "success", "message": f"Requisition #{req_id} issued cleanly.", "req_id": req_id}
 
 @app.post("/api/banks/{bank_id}/assistant")
+@app.post("/banks/{bank_id}/assistant")
 def query_assistant(bank_id: str, payload: dict):
     question = payload.get("question", "")
     q_lower = question.lower()
@@ -157,10 +166,12 @@ def query_assistant(bank_id: str, payload: dict):
     return {"answer": ans, "question": question}
 
 @app.get("/api/banks/{bank_id}/plan", response_model=List[CollectionPlanRow])
+@app.get("/banks/{bank_id}/plan", response_model=List[CollectionPlanRow])
 def get_collection_plan(bank_id: str, f: float = Query(0.15, ge=0.05, le=0.30)):
     return generate_collection_plan(bridge_f=f)
 
 @app.get("/api/banks/{bank_id}/reports/nabh", response_model=NABHReport)
+@app.get("/banks/{bank_id}/reports/nabh", response_model=NABHReport)
 def get_nabh_reports(bank_id: str):
     return NABHReport()
 
