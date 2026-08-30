@@ -57,7 +57,6 @@ const NAV_ITEMS = [
   { id: "Daily Ops", icon: "📊", label: "Daily Ops" },
   { id: "7-Day Forecast", icon: "📈", label: "7-Day Forecast" },
   { id: "Planner", icon: "📅", label: "Tactical Planner" },
-  { id: "Requisitions", icon: "🩺", label: "Requisitions" },
   { id: "Data Entry", icon: "📥", label: "Data Ingestion" },
   { id: "Analytics", icon: "📉", label: "Analytics" },
   { id: "Reports", icon: "📑", label: "NABH Reports" },
@@ -1586,7 +1585,6 @@ export default function App() {
       case "Daily Ops":      return <DailyOps bands={bands} forecast={forecast} onBand={setBand} />;
       case "7-Day Forecast": return <ForecastPage forecast={forecast} bands={bands} />;
       case "Planner":        return <PlannerPage />;
-      case "Requisitions":   return <ReqsPage />;
       case "Data Entry":     return <DataEntryPage onRefresh={loadData} />;
       case "Analytics":      return <AnalyticsPage />;
       case "Reports":        return <ReportsPage />;
