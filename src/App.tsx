@@ -1100,23 +1100,39 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
             Format: <code>date (YYYY-MM-DD), units_issued (integer &ge; 0)</code>
           </p>
 
-          <div style={{ marginBottom: 14 }}>
-            <label style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "8px 14px", background: "var(--sunken)",
-              border: "1px solid var(--border)", borderRadius: 7,
-              fontSize: 12.5, fontWeight: 600, color: "var(--ink-0)",
-              cursor: "pointer"
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <label style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "8px 14px", background: "var(--sunken)",
+                border: "1px solid var(--border)", borderRadius: 7,
+                fontSize: 12.5, fontWeight: 600, color: "var(--ink-0)",
+                cursor: "pointer"
+              }}>
+                📁 Choose .CSV File
+                <input type="file" accept=".csv" onChange={handleFileChange} style={{ display: "none" }} />
+              </label>
+              <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>or paste raw text below</span>
+            </div>
+
+            <span style={{
+              fontSize: 11.5, fontWeight: 600, color: "var(--am-7)",
+              background: "var(--am-1)", padding: "3px 10px", borderRadius: 6,
+              border: "1px solid var(--am-2)"
             }}>
-              📁 Choose .CSV File
-              <input type="file" accept=".csv" onChange={handleFileChange} style={{ display: "none" }} />
-            </label>
-            <span style={{ fontSize: 11.5, color: "var(--ink-3)", marginLeft: 10 }}>or edit raw text below</span>
+              📊 {csvText.trim().split("\n").filter(Boolean).length} lines in buffer
+            </span>
           </div>
 
           <textarea
-            rows={7} value={csvText} onChange={e => setCsvText(e.target.value)}
-            style={{ width: "100%", padding: "12px 14px", fontFamily: "var(--f-data)", fontSize: 12.5, background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, color: "var(--ink-0)", marginBottom: 16 }}
+            rows={14} value={csvText} onChange={e => setCsvText(e.target.value)}
+            style={{
+              width: "100%", height: 320, padding: "14px 16px",
+              fontFamily: "var(--f-data)", fontSize: 12.5, lineHeight: "19px",
+              background: "var(--surface-dim)", border: "1px solid var(--border)",
+              borderRadius: 8, color: "var(--ink-0)", marginBottom: 16,
+              resize: "vertical", overflowY: "auto"
+            }}
           />
 
           {status && <div style={{ marginBottom: 14, padding: "10px 14px", background: "var(--st-1)", border: "1px solid var(--st-6)", borderRadius: 7, color: "var(--st-7)", fontWeight: 600, fontSize: 12.5 }}>{status}</div>}
