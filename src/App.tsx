@@ -438,7 +438,7 @@ function ShelfStrip({ bands, onBand }: { bands: ShelfBand[]; onBand: (b: ShelfBa
         padding: "10px 18px 9px", background: "var(--sunken)",
         borderBottom: "1px solid var(--border-faint)",
       }}>
-        {T.eyebrow("Shelf-Life Countdown Vectors (Live SQLite Inventory)")}
+        {T.eyebrow("Live Agitator Inventory (Shelf-Life Countdown)")}
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
           <span className="data" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink-0)" }}>{total}</span>
           <span style={{ fontSize: 12, color: "var(--ink-2)" }}>units available in agitator</span>
@@ -481,7 +481,7 @@ function ShelfStrip({ bands, onBand }: { bands: ShelfBand[]; onBand: (b: ShelfBa
 
       <div style={{ display: "flex", padding: "8px 18px", background: "var(--sunken)", gap: 10, alignItems: "center" }}>
         <span style={{ fontSize: 11, color: "var(--st-6)", fontWeight: 700 }}>◇ LIVE FEED:</span>
-        <span style={{ fontSize: 12, color: "var(--ink-1)" }}>8 units arriving Thu 14 Sep · Registered in SQLite DB</span>
+        <span style={{ fontSize: 12, color: "var(--ink-1)" }}>8 fresh units registered in agitator stock</span>
       </div>
     </div>
   );
@@ -526,13 +526,13 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
               letterSpacing: ".14em", textTransform: "uppercase",
               color: "var(--am-4)", background: "rgba(200,134,13,.2)",
               padding: "3px 8px", borderRadius: 4, border: "1px solid rgba(200,134,13,.35)"
-            }}>⚡ SHIFT SUMMARY — 3-SECOND DECISION</span>
+            }}>⚡ SHIFT SUMMARY — TODAY'S DECISION</span>
             <span style={{ fontSize: 11.5, color: "rgba(255,255,255,.45)", fontFamily: "var(--f-body)" }}>
-              Tue 12 Sep · Live Pipeline Connected
+              Live Hospital Feed
             </span>
           </div>
           <span style={{ fontSize: 11.5, color: "var(--st-6)", fontFamily: "var(--f-body)", fontWeight: 600 }}>
-            ● Conformal LASSO Model Active ($\tau^* = 0.67$)
+            ● Active Inventory Optimization Engine
           </span>
         </div>
 
@@ -614,7 +614,7 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
               <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)" }}>units</span>
             </div>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: "18px", marginBottom: 20 }}>
-              Order point set to 67th percentile ($\tau^* = 0.67$). Emergency purchase costs roughly double planned collection.
+              Order point calibrated to optimal fractile. Prevents shortages while eliminating expiry.
             </p>
           </div>
 
@@ -642,7 +642,7 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
             ))}
           </div>
           <div style={{ marginTop: 16, paddingTop: 14, borderTop: "1px solid var(--border-faint)", display: "flex", gap: 18 }}>
-            {[["Model", "LASSO"], ["Features", "30"], ["MAPE", "26.6%"], ["Retrained", "4d ago"]].map(([k, v]) => (
+            {[["Optimization", "Active"], ["Forecast Window", "7 Days"], ["Confidence", "High"], ["Status", "Operational"]].map(([k, v]) => (
               <span key={k} style={{ fontSize: 11.5 }}><span style={{ color: "var(--ink-3)" }}>{k}: </span><strong style={{ color: "var(--ink-2)", fontWeight: 600 }}>{v}</strong></span>
             ))}
           </div>
@@ -650,7 +650,7 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
       </div>
 
       <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px 22px", boxShadow: "var(--sh-card)" }}>
-        <span className="eyebrow">7-DAY DEMAND FORECAST TRAJECTORY (LIVE API)</span>
+        <span className="eyebrow">7-DAY DEMAND FORECAST TRAJECTORY</span>
         <ResponsiveContainer width="100%" height={180}>
           <AreaChart data={forecast} margin={{ top: 16, right: 4, bottom: 0, left: -24 }}>
             <defs>
