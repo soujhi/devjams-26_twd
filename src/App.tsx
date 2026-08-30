@@ -545,32 +545,59 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
             
             {/* Interactive Quantity Display or Adjuster */}
             {isAdjusting ? (
-              <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "12px", margin: "10px 0 14px" }}>
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 8, fontWeight: 600 }}>
+              <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(200,134,13,0.4)", borderRadius: 8, padding: "14px", margin: "10px 0 14px" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 8, fontWeight: 600 }}>
                   Adjust Target Units:
                 </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <button
+                    type="button"
                     onClick={() => setCustomQty(Math.max(0, actionQty - 1))}
-                    style={{ width: 34, height: 34, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+                    style={{ width: 36, height: 36, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
                     −
                   </button>
-                  <span className="data" style={{ fontSize: 32, fontWeight: 700, color: "#fff", flex: 1, textAlign: "center" }}>
-                    {actionQty}
-                  </span>
+                  <input
+                    type="number"
+                    value={actionQty}
+                    onChange={e => setCustomQty(Math.max(0, parseInt(e.target.value, 10) || 0))}
+                    style={{
+                      flex: 1, height: 36, background: "#10151C", border: "1px solid var(--am-6)",
+                      borderRadius: 6, textAlign: "center", fontFamily: "var(--f-data)",
+                      fontSize: 20, fontWeight: 700, color: "#fff", outline: "none"
+                    }}
+                  />
                   <button
+                    type="button"
                     onClick={() => setCustomQty(actionQty + 1)}
-                    style={{ width: 34, height: 34, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+                    style={{ width: 36, height: 36, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
                     +
                   </button>
                 </div>
 
-                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 4, fontWeight: 600 }}>
+                {/* Quick Presets */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 12 }}>
+                  {[-5, +5, +10].map(delta => (
+                    <button
+                      key={delta}
+                      type="button"
+                      onClick={() => setCustomQty(Math.max(0, actionQty + delta))}
+                      style={{
+                        flex: 1, padding: "4px 0", background: "rgba(255,255,255,0.08)",
+                        border: "1px solid rgba(255,255,255,0.15)", borderRadius: 4,
+                        fontSize: 11, fontWeight: 600, color: "var(--am-4)", cursor: "pointer"
+                      }}>
+                      {delta > 0 ? `+${delta}` : delta}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", marginBottom: 4, fontWeight: 600 }}>
                   Override Reason:
                 </div>
                 <select
                   value={adjustReason} onChange={e => setAdjustReason(e.target.value)}
-                  style={{ width: "100%", padding: "7px 9px", background: "#10151C", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, fontSize: 11.5, color: "#fff", outline: "none", marginBottom: 10 }}>
+                  style={{ width: "100%", padding: "7px 9px", background: "#10151C", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, fontSize: 11.5, color: "#fff", outline: "none", marginBottom: 6 }}>
                   <option value="Anticipating emergency trauma procedure">Emergency trauma case expected</option>
                   <option value="Mobile camp donor turnout adjustment">Mobile camp donor turnout buffer</option>
                   <option value="Regional surge precaution">Regional surge precaution</option>
@@ -588,19 +615,27 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
             </p>
           </div>
 
-          {confirmed ? (
-            <div style={{ padding: "10px 14px", background: "rgba(28,104,72,0.25)", border: "1px solid rgba(28,104,72,0.4)", borderRadius: 7, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontSize: 12 }}>
-              ✓ Confirmed {customQty !== null && customQty !== defaultQty ? `(${actionQty} units adjusted)` : ""} by RK
+          {confirmed && !isAdjusting ? (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", background: "rgba(28,104,72,0.25)", border: "1px solid rgba(28,104,72,0.4)", borderRadius: 7 }}>
+              <div style={{ color: "rgba(255,255,255,0.85)", fontWeight: 500, fontSize: 12 }}>
+                ✓ Confirmed {customQty !== null && customQty !== defaultQty ? `(${actionQty} units adjusted)` : ""} by RK
+              </div>
+              <button
+                type="button"
+                onClick={() => { setConfirmed(false); setIsAdjusting(true); }}
+                style={{ background: "none", border: "none", color: "var(--am-4)", fontSize: 11, fontWeight: 700, cursor: "pointer", textDecoration: "underline" }}>
+                Edit ✎
+              </button>
             </div>
           ) : isAdjusting ? (
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={handleSaveAdjustment} style={{ flex: 1, padding: "10px 0", background: "var(--st-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Save & Confirm</button>
-              <button onClick={() => setIsAdjusting(false)} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: 13, cursor: "pointer" }}>Cancel</button>
+              <button type="button" onClick={handleSaveAdjustment} style={{ flex: 1, padding: "10px 0", background: "var(--st-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Save & Confirm</button>
+              <button type="button" onClick={() => setIsAdjusting(false)} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: 13, cursor: "pointer" }}>Cancel</button>
             </div>
           ) : (
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={handleConfirm} style={{ flex: 1, padding: "10px 0", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>Confirm</button>
-              <button onClick={() => setIsAdjusting(true)} style={{ flex: 1, padding: "10px 0", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontSize: 13.5, cursor: "pointer" }}>Adjust ✎</button>
+              <button type="button" onClick={handleConfirm} style={{ flex: 1, padding: "10px 0", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>Confirm</button>
+              <button type="button" onClick={() => setIsAdjusting(true)} style={{ flex: 1, padding: "10px 0", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontSize: 13.5, cursor: "pointer" }}>Adjust ✎</button>
             </div>
           )}
         </div>
