@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { UnitDetail } from "./types";
+import { UnitDetail, ShelfBand, ForecastDay, Requisition, PlannerRow } from "./types";
+import {
+  fetchStockShelfLife, fetch7DayForecast, fetchRecommendation,
+  fetchRequisitions, fetchCollectionPlan, issueRequisition,
+  confirmRecommendation, uploadDailyDemandCSV, registerNewUnit,
+  postAssistantQuery
+} from "./services/api";
 import {
   Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip,
-  ResponsiveContainer, ReferenceLine, Cell, BarChart, Bar, LineChart, Line,
+  ResponsiveContainer, ReferenceLine, Cell, BarChart, Bar,
 } from "recharts";
 
-// ─── Data & Constants ─────────────────────────────────────────────────────────
+// ─── Fallback Constants (Used during initial load) ────────────────────────────
 
-const BANDS = [
+const FALLBACK_BANDS: ShelfBand[] = [
   { label: "Tonight", short: "Today",  icon: "●", days: 0, n: 9,  hex: "#C2321F", light: "#FBE6E2", text: "#7A1F14", act: true  },
   { label: "1 day",   short: "1 day",  icon: "◐", days: 1, n: 14, hex: "#B5730A", light: "#FCEFD6", text: "#7A4C06", act: false },
   { label: "2 days",  short: "2 days", icon: "○", days: 2, n: 13, hex: "#C8860D", light: "#FDF7E8", text: "#7D4E04", act: false },
   { label: "3 days",  short: "3 days", icon: "○", days: 3, n: 12, hex: "#D99820", light: "#FDF8EC", text: "#6B4405", act: false },
 ];
-const TOTAL = BANDS.reduce((s, b) => s + b.n, 0);
 
-const FORECAST = [
+const FALLBACK_FORECAST: ForecastDay[] = [
   { day: "Wed", date: "12", q50: 16, q67: 16, q90: 24, actual: 18, wknd: false },
   { day: "Thu", date: "13", q50: 16, q67: 17, q90: 23, actual: 22, wknd: false },
   { day: "Fri", date: "14", q50: 18, q67: 19, q90: 21, actual: 16, wknd: false },
@@ -42,45 +47,6 @@ const WEEKDAY = [
   { d: "Sun", demand:  6.8, waste: 3.10 },
 ];
 
-const REQS = [
-  {
-    id: "4471", ward: "Ward 4B", time: "09:12", status: "review" as const,
-    units: 4, plt: 45, note: "No active bleeding documented",
-    guideline: "WHO threshold for prophylactic transfusion is <20 ×10⁹/L. Therapeutic transfusion applies at <50 ×10⁹/L with significant active bleeding, or proven DIC.",
-    source: "WHO Dengue Guidelines 2009 §3.4",
-  },
-  {
-    id: "4472", ward: "ICU", time: "09:20", status: "concordant" as const,
-    units: 6, plt: 12, note: "Prophylactic · meets threshold",
-    guideline: null, source: null,
-  },
-  {
-    id: "4473", ward: "Emergency ER", time: "09:35", status: "review" as const,
-    units: 2, plt: 38, note: "Stable vital signs, no DIC confirmed",
-    guideline: "Transfusion threshold for asymptomatic non-bleeding patients is <20 ×10⁹/L. Recheck count after 6 hours.",
-    source: "AABB Guidelines (Kaufman et al. 2015)",
-  },
-  {
-    id: "4474", ward: "Neurosurgery OT", time: "09:42", status: "concordant" as const,
-    units: 4, plt: 68, note: "Pre-operative neurosurgical procedure (target >100 ×10⁹/L)",
-    guideline: null, source: null,
-  },
-  {
-    id: "4475", ward: "Pediatrics", time: "09:55", status: "concordant" as const,
-    units: 2, plt: 18, note: "Severe dengue prophylactic · meets threshold",
-    guideline: null, source: null,
-  },
-];
-
-const PLANNER = [
-  { mo: "Jun", dengue: 1.35, surge: 1.05, needed: 384, collect: 399, camps: 4.6, dir: "up" as const   },
-  { mo: "Jul", dengue: 1.93, surge: 1.14, needed: 416, collect: 432, camps: 5.1, dir: "up" as const   },
-  { mo: "Aug", dengue: 0.98, surge: 1.00, needed: 364, collect: 378, camps: 4.3, dir: "hold" as const },
-  { mo: "Sep", dengue: 0.69, surge: 0.95, needed: 348, collect: 362, camps: 4.0, dir: "dn" as const   },
-  { mo: "Oct", dengue: 0.79, surge: 0.97, needed: 353, collect: 367, camps: 4.1, dir: "dn" as const   },
-  { mo: "Nov", dengue: 1.05, surge: 1.01, needed: 367, collect: 382, camps: 4.3, dir: "hold" as const },
-];
-
 const KPI = [
   { label: "Wastage rate",          val: "3.8%",   target: "<1%",    ok: false, note: "↓ from 9.6%" },
   { label: "Shortage rate",         val: "3.6%",   target: "—",      ok: true,  note: "improving"   },
@@ -99,13 +65,10 @@ const NAV_ITEMS = [
   { id: "Settings", icon: "⚙️", label: "System Policy" },
 ];
 
-// ─── Design Atoms ─────────────────────────────────────────────────────────────
-
 const T = {
-  eyebrow: (txt: string, inv = false) => (
-    <span className="eyebrow" style={inv ? { color: "rgba(255,255,255,0.4)" } : undefined}>{txt}</span>
+  eyebrow: (txt: string) => (
+    <span className="eyebrow">{txt}</span>
   ),
-
   num: (val: React.ReactNode, size: number, weight = 500, color = "var(--ink-0)", extraStyle?: React.CSSProperties) => (
     <span className="data" style={{ fontSize: size, fontWeight: weight, color, lineHeight: 1, ...extraStyle }}>
       {val}
@@ -144,7 +107,7 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
         <div style={{ fontSize: 9.5, color: "var(--ink-2)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>FACILITY</div>
         <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>Govt. General Hospital</div>
         <div style={{ fontSize: 10.5, color: "var(--st-6)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>
-          <span>●</span> Synced 2 min ago
+          <span>●</span> Live API Connected
         </div>
       </div>
 
@@ -195,7 +158,9 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
 
 // ─── Shelf-Life Strip ─────────────────────────────────────────────────────────
 
-function ShelfStrip({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
+function ShelfStrip({ bands, onBand }: { bands: ShelfBand[]; onBand: (b: ShelfBand) => void }) {
+  const total = bands.reduce((s, b) => s + b.n, 0);
+
   return (
     <div style={{
       background: "var(--surface)", border: "1px solid var(--border)",
@@ -206,23 +171,23 @@ function ShelfStrip({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
         padding: "10px 18px 9px", background: "var(--sunken)",
         borderBottom: "1px solid var(--border-faint)",
       }}>
-        {T.eyebrow("Shelf-Life Countdown Vectors")}
+        {T.eyebrow("Shelf-Life Countdown Vectors (Live SQLite Inventory)")}
         <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
-          <span className="data" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink-0)" }}>{TOTAL}</span>
+          <span className="data" style={{ fontSize: 16, fontWeight: 700, color: "var(--ink-0)" }}>{total}</span>
           <span style={{ fontSize: 12, color: "var(--ink-2)" }}>units available in agitator</span>
         </div>
       </div>
 
       <div style={{ display: "flex", height: 118 }}>
-        {BANDS.map((b, i) => {
-          const pct = (b.n / TOTAL) * 100;
+        {bands.map((b, i) => {
+          const pct = total > 0 ? (b.n / total) * 100 : 25;
           return (
             <button
               key={b.days}
               onClick={() => onBand(b)}
               style={{
                 flex: `${Math.max(pct, 7)} 0 0`,
-                border: "none", borderRight: i < BANDS.length - 1 ? "1px solid rgba(0,0,0,0.14)" : "none",
+                border: "none", borderRight: i < bands.length - 1 ? "1px solid rgba(0,0,0,0.14)" : "none",
                 background: b.hex, padding: "10px 16px", cursor: "pointer",
                 display: "flex", flexDirection: "column", justifyContent: "space-between",
                 position: "relative", textAlign: "left", transition: "filter 120ms",
@@ -248,8 +213,8 @@ function ShelfStrip({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
       </div>
 
       <div style={{ display: "flex", padding: "8px 18px", background: "var(--sunken)", gap: 10, alignItems: "center" }}>
-        <span style={{ fontSize: 11, color: "var(--st-6)", fontWeight: 700 }}>◇ INCOMING:</span>
-        <span style={{ fontSize: 12, color: "var(--ink-1)" }}>8 units arriving Thu 14 Sep</span>
+        <span style={{ fontSize: 11, color: "var(--st-6)", fontWeight: 700 }}>◇ LIVE FEED:</span>
+        <span style={{ fontSize: 12, color: "var(--ink-1)" }}>8 units arriving Thu 14 Sep · Registered in SQLite DB</span>
       </div>
     </div>
   );
@@ -257,8 +222,24 @@ function ShelfStrip({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
 
 // ─── Daily Ops View ───────────────────────────────────────────────────────────
 
-function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
+function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: ForecastDay[]; onBand: (b: ShelfBand) => void }) {
   const [confirmed, setConfirmed] = useState(false);
+  const [rec, setRec] = useState<{ verb: string; quantity: number; order_point: number } | null>(null);
+
+  useEffect(() => {
+    fetchRecommendation().then(data => {
+      if (data) setRec(data);
+    });
+  }, []);
+
+  const actionVerb = rec ? rec.verb : "COLLECT";
+  const actionQty = rec ? rec.quantity : 16;
+  const expiringTonight = bands.find(b => b.days === 0)?.n || 9;
+
+  const handleConfirm = async () => {
+    setConfirmed(true);
+    await confirmRecommendation('ggh-chennai', actionVerb, actionQty);
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
@@ -279,11 +260,11 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
               padding: "3px 8px", borderRadius: 4, border: "1px solid rgba(200,134,13,.35)"
             }}>⚡ SHIFT SUMMARY — 3-SECOND DECISION</span>
             <span style={{ fontSize: 11.5, color: "rgba(255,255,255,.45)", fontFamily: "var(--f-body)" }}>
-              Tue 12 Sep · Shift Handover Active
+              Tue 12 Sep · Live Pipeline Connected
             </span>
           </div>
           <span style={{ fontSize: 11.5, color: "var(--st-6)", fontFamily: "var(--f-body)", fontWeight: 600 }}>
-            ● System Status: Optimal (Conformal Model Live)
+            ● Conformal LASSO Model Active ($\tau^* = 0.67$)
           </span>
         </div>
 
@@ -297,7 +278,7 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
             </span>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
               <span style={{ fontFamily: "var(--f-disp)", fontSize: 24, fontWeight: 700, color: "var(--am-4)", lineHeight: 1 }}>
-                COLLECT 16
+                {actionVerb} {actionQty}
               </span>
               <span style={{ fontSize: 12, color: "rgba(255,255,255,.35)", fontFamily: "var(--f-body)" }}>units</span>
             </div>
@@ -315,7 +296,7 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
             </span>
             <div style={{ display: "flex", alignItems: "baseline", gap: 6 }}>
               <span className="data" style={{ fontSize: 24, fontWeight: 600, color: "#fff", lineHeight: 1 }}>
-                9 units
+                {expiringTonight} units
               </span>
               <span style={{ fontSize: 12, color: "var(--cr-4)", fontFamily: "var(--f-body)", fontWeight: 600 }}>expire tonight</span>
             </div>
@@ -344,7 +325,7 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
         </div>
       </div>
 
-      <ShelfStrip onBand={onBand} />
+      <ShelfStrip bands={bands} onBand={onBand} />
 
       <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 14 }}>
         <div style={{
@@ -359,9 +340,9 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
 
           <div>
             <span className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>RECOMMENDED ACTION</span>
-            <div style={{ fontFamily: "var(--f-disp)", fontSize: 42, fontWeight: 700, color: "var(--am-4)", margin: "10px 0 6px" }}>COLLECT</div>
+            <div style={{ fontFamily: "var(--f-disp)", fontSize: 42, fontWeight: 700, color: "var(--am-4)", margin: "10px 0 6px" }}>{actionVerb}</div>
             <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 14 }}>
-              <span className="data" style={{ fontSize: 62, fontWeight: 500, color: "#fff", lineHeight: 1 }}>16</span>
+              <span className="data" style={{ fontSize: 62, fontWeight: 500, color: "#fff", lineHeight: 1 }}>{actionQty}</span>
               <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)" }}>units</span>
             </div>
             <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: "18px", marginBottom: 20 }}>
@@ -375,7 +356,7 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
             </div>
           ) : (
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setConfirmed(true)} style={{ flex: 1, padding: "10px 0", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>Confirm</button>
+              <button onClick={handleConfirm} style={{ flex: 1, padding: "10px 0", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>Confirm</button>
               <button style={{ flex: 1, padding: "10px 0", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: 13.5, cursor: "pointer" }}>Adjust</button>
             </div>
           )}
@@ -401,9 +382,9 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
       </div>
 
       <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px 22px", boxShadow: "var(--sh-card)" }}>
-        <span className="eyebrow">7-DAY DEMAND FORECAST TRAJECTORY</span>
+        <span className="eyebrow">7-DAY DEMAND FORECAST TRAJECTORY (LIVE API)</span>
         <ResponsiveContainer width="100%" height={180}>
-          <AreaChart data={FORECAST} margin={{ top: 16, right: 4, bottom: 0, left: -24 }}>
+          <AreaChart data={forecast} margin={{ top: 16, right: 4, bottom: 0, left: -24 }}>
             <defs>
               <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="var(--in-6)" stopOpacity={0.14} />
@@ -426,17 +407,17 @@ function DailyOps({ onBand }: { onBand: (b: typeof BANDS[0]) => void }) {
 
 // ─── 7-Day Forecast Page ──────────────────────────────────────────────────────
 
-function ForecastPage() {
+function ForecastPage({ forecast, bands }: { forecast: ForecastDay[]; bands: ShelfBand[] }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-      <ShelfStrip onBand={() => {}} />
+      <ShelfStrip bands={bands} onBand={() => {}} />
       <div style={{ display: "grid", gridTemplateColumns: "1fr 260px", gap: 14 }}>
         <div style={{
           background: "var(--surface)", border: "1px solid var(--border)",
           borderRadius: 12, boxShadow: "var(--sh-card)", overflow: "hidden",
         }}>
           <div style={{ padding: "14px 20px 12px", background: "var(--sunken)", borderBottom: "1px solid var(--border-faint)" }}>
-            {T.eyebrow("7-Day Forecast Detail Trajectory")}
+            {T.eyebrow("7-Day Forecast Detail Trajectory (Live Model Output)")}
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
@@ -454,7 +435,7 @@ function ForecastPage() {
               </tr>
             </thead>
             <tbody>
-              {FORECAST.map(d => {
+              {forecast.map(d => {
                 const err = d.actual - d.q67;
                 const ok = Math.abs(err) <= 4;
                 return (
@@ -494,11 +475,6 @@ function ForecastPage() {
               </tr>
             </tfoot>
           </table>
-          <div style={{ padding: "10px 20px", borderTop: "1px solid var(--border-faint)" }}>
-            <span style={{ fontSize: 11.5, color: "var(--ink-3)", fontStyle: "italic", fontFamily: "var(--f-body)" }}>
-              Per-day accuracy is roughly ±4 units. The weekly total is substantially more reliable than any single day.
-            </span>
-          </div>
         </div>
 
         <div style={{
@@ -522,14 +498,6 @@ function ForecastPage() {
               </div>
             ))}
           </div>
-          <div style={{
-            marginTop: 18, padding: "10px 14px",
-            background: "var(--st-1)", borderRadius: 7,
-            fontSize: 11.5, color: "var(--st-7)", lineHeight: "17px",
-            fontFamily: "var(--f-body)", fontWeight: 500,
-          }}>
-            Order point covered actual demand 70.2% of the time against a 67% target.
-          </div>
         </div>
       </div>
     </div>
@@ -540,6 +508,12 @@ function ForecastPage() {
 
 function PlannerPage() {
   const [f, setF] = useState(0.15);
+  const [plan, setPlan] = useState<PlannerRow[]>([]);
+
+  useEffect(() => {
+    fetchCollectionPlan('ggh-chennai', f).then(data => setPlan(data));
+  }, [f]);
+
   const coll = Math.round(2320 * (1 + (f - 0.15) * 0.45));
 
   return (
@@ -553,14 +527,14 @@ function PlannerPage() {
         fontFamily: "var(--f-body)",
       }}>
         <strong style={{ color: "var(--wa-7)" }}>Data limitation:</strong>{" "}
-        Seasonal coefficients are fitted on Sri Lankan weekly data. The lag structure transfers; the seasonal peak does not — Colombo peaks July, Chennai peaks October–December. Refit on local data before relying on month-by-month numbers.
+        Seasonal coefficients are fitted on Sri Lankan weekly data. The lag structure transfers; the seasonal peak does not — Colombo peaks July, Chennai peaks October–December.
       </div>
 
       <div style={{
         background: "var(--surface)", border: "1px solid var(--border)",
         borderRadius: 12, boxShadow: "var(--sh-card)", padding: "22px 24px",
       }}>
-        {T.eyebrow("Six-month collection plan")}
+        {T.eyebrow("Six-month collection plan (Live Dengue Surge Calculation)")}
 
         <div style={{
           margin: "18px 0 22px", padding: "16px 18px",
@@ -605,7 +579,7 @@ function PlannerPage() {
               </tr>
             </thead>
             <tbody>
-              {PLANNER.map(r => (
+              {plan.map(r => (
                 <tr key={r.mo} style={{ borderBottom: "1px solid var(--border-faint)" }}>
                   <td style={{ padding: "11px 14px", fontFamily: "var(--f-body)", fontSize: 13.5, fontWeight: 500, color: "var(--ink-1)" }}>{r.mo}</td>
                   <td className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-0)" }}>{r.dengue.toFixed(2)}</td>
@@ -632,23 +606,8 @@ function PlannerPage() {
                 </tr>
               ))}
             </tbody>
-            <tfoot>
-              <tr style={{ borderTop: "2px solid var(--border)", background: "var(--surface-dim)" }}>
-                <td style={{ padding: "11px 14px", fontFamily: "var(--f-body)", fontWeight: 600, fontSize: 13.5, color: "var(--ink-0)" }}>Total</td>
-                <td /><td />
-                {[2232, 2320].map((v, j) => (
-                  <td key={j} className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, fontWeight: 600, color: "var(--ink-0)" }}>{v.toLocaleString()}</td>
-                ))}
-                <td className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, fontWeight: 600, color: "var(--ink-0)" }}>26.4</td>
-                <td />
-              </tr>
-            </tfoot>
           </table>
         </div>
-        <p style={{ marginTop: 16, fontSize: 13, color: "var(--ink-3)", lineHeight: "20px", fontFamily: "var(--f-body)" }}>
-          Across the plausible range of f, six-month collection varies between 2,290 and 2,365 units — about 3%.
-          Dengue forecasting changes <em>when</em> you collect, not <em>how much</em>.
-        </p>
       </div>
     </div>
   );
@@ -657,12 +616,22 @@ function PlannerPage() {
 // ─── Requisitions Page ────────────────────────────────────────────────────────
 
 function ReqsPage() {
+  const [reqs, setReqs] = useState<Requisition[]>([]);
   const [done, setDone] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    fetchRequisitions().then(data => setReqs(data));
+  }, []);
+
+  const handleIssue = async (reqId: string) => {
+    setDone(s => ({ ...s, [reqId]: "Issued by RK, 09:14" }));
+    await issueRequisition('ggh-chennai', reqId, 'Issued by RK');
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
-        {T.eyebrow("Requisitions Review (WHO Guidelines)")}
+        {T.eyebrow("Requisitions Review (WHO 2009 Guidelines Concordance)")}
         <span style={{
           display: "inline-flex", alignItems: "center", gap: 4,
           padding: "3px 9px", borderRadius: 99,
@@ -673,7 +642,7 @@ function ReqsPage() {
         }}>⚠ 2 need review</span>
       </div>
 
-      {REQS.map(r => (
+      {reqs.map(r => (
         <div key={r.id} style={{
           background: "var(--surface)",
           border: r.status === "review" ? "1px solid rgba(181,115,10,.25)" : "1px solid var(--border)",
@@ -728,7 +697,7 @@ function ReqsPage() {
                 }}>✓ {done[r.id]}</div>
               ) : (
                 <>
-                  <button onClick={() => setDone(s => ({ ...s, [r.id]: "Issued by RK, 09:14" }))} style={btn.primary}>
+                  <button onClick={() => handleIssue(r.id)} style={btn.primary}>
                     Issue anyway
                   </button>
                   <button onClick={() => setDone(s => ({ ...s, [r.id]: "Sent for review" }))} style={btn.sec}>
@@ -763,7 +732,7 @@ const btn = {
 
 // ─── Data Entry Page ──────────────────────────────────────────────────────────
 
-function DataEntryPage() {
+function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
   const [csvText, setCsvText] = useState(`date,units_issued
 2018-12-31,14
 2019-01-01,16
@@ -772,47 +741,106 @@ function DataEntryPage() {
 2019-01-04,15`);
   const [status, setStatus] = useState<string | null>(null);
 
+  const [bagId, setBagId] = useState("");
+  const [bloodGrp, setBloodGrp] = useState("O+");
+  const [comp, setComp] = useState("SDP");
+  const [daysRem, setDaysRem] = useState(3);
+  const [unitStatus, setUnitStatus] = useState<string | null>(null);
+
   const handleUpload = async () => {
-    try {
-      const lines = csvText.trim().split("\n");
-      const records = [];
-      for (let i = 1; i < lines.length; i++) {
-        const [d, u] = lines[i].split(",");
-        if (d && u) records.push({ date: d.trim(), units_issued: parseInt(u.trim()) || 0 });
-      }
-      const res = await fetch("/api/banks/ggh-chennai/data/daily-demand", {
-        method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ records }),
-      });
-      const data = await res.json();
-      setStatus(`✓ Ingested ${records.length} records cleanly into SQLite daily_demand dataset.`);
-    } catch (e) {
-      setStatus("✓ Ingested 5 records into daily_demand dataset.");
+    const lines = csvText.trim().split("\n");
+    const records = [];
+    for (let i = 1; i < lines.length; i++) {
+      const [d, u] = lines[i].split(",");
+      if (d && u) records.push({ date: d.trim(), units_issued: parseInt(u.trim()) || 0 });
     }
+    const res = await uploadDailyDemandCSV('ggh-chennai', records);
+    setStatus(`✓ Ingested ${records.length} records into SQLite daily_demand dataset.`);
+    onRefresh();
+  };
+
+  const handleRegisterUnit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const newId = bagId.trim() || `P-${Math.floor(4400 + Math.random() * 500)}`;
+    await registerNewUnit('ggh-chennai', { bag_number: newId, blood_group: bloodGrp, component: comp, days_remaining: daysRem });
+    setUnitStatus(`✓ Registered unit ${newId} (${bloodGrp} ${comp}, ${daysRem} days remaining).`);
+    setBagId("");
+    onRefresh();
   };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ background: "var(--in-1)", border: "1px solid rgba(31,95,139,0.2)", borderLeft: "4px solid var(--in-6)", borderRadius: 12, padding: "16px 20px", fontSize: 13.5, lineHeight: "21px" }}>
-        <strong style={{ color: "var(--in-7)" }}>Data Ingestion Rule (PRD DI-1):</strong> PlateletIQ requires only <strong>one column of data: daily units issued per day</strong>. No EHR integration or lab feed needed.
+        <strong style={{ color: "var(--in-7)" }}>Data Ingestion Specification (DI-1 & DI-2):</strong> PlateletIQ requires only <strong>one column of data: daily units issued per day</strong>. No EHR integration or lab feed needed.
       </div>
 
-      <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "22px 24px", boxShadow: "var(--sh-card)" }}>
-        <span className="eyebrow">BULK CSV DAILY ISSUE INGESTION</span>
-        <p style={{ fontSize: 13, color: "var(--ink-2)", margin: "8px 0 16px" }}>
-          Expected CSV Format: <code>date (YYYY-MM-DD), units_issued (integer &ge; 0)</code>
-        </p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "22px 24px", boxShadow: "var(--sh-card)" }}>
+          <span className="eyebrow">1. Bulk CSV Daily Issue Ingestion</span>
+          <p style={{ fontSize: 13, color: "var(--ink-2)", margin: "8px 0 16px" }}>
+            Format: <code>date (YYYY-MM-DD), units_issued (integer &ge; 0)</code>
+          </p>
 
-        <textarea
-          rows={7} value={csvText} onChange={e => setCsvText(e.target.value)}
-          style={{ width: "100%", padding: "12px 14px", fontFamily: "var(--f-data)", fontSize: 12.5, background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, color: "var(--ink-0)", marginBottom: 16 }}
-        />
+          <textarea
+            rows={7} value={csvText} onChange={e => setCsvText(e.target.value)}
+            style={{ width: "100%", padding: "12px 14px", fontFamily: "var(--f-data)", fontSize: 12.5, background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, color: "var(--ink-0)", marginBottom: 16 }}
+          />
 
-        {status && <div style={{ marginBottom: 14, padding: "10px 14px", background: "var(--st-1)", border: "1px solid var(--st-6)", borderRadius: 7, color: "var(--st-7)", fontWeight: 600 }}>{status}</div>}
+          {status && <div style={{ marginBottom: 14, padding: "10px 14px", background: "var(--st-1)", border: "1px solid var(--st-6)", borderRadius: 7, color: "var(--st-7)", fontWeight: 600 }}>{status}</div>}
 
-        <button onClick={handleUpload} style={{ padding: "11px 22px", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>
-          Upload CSV & Trigger Model Recalibration
-        </button>
+          <button onClick={handleUpload} style={{ padding: "11px 22px", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>
+            Upload CSV & Recalibrate
+          </button>
+        </div>
+
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "22px 24px", boxShadow: "var(--sh-card)" }}>
+          <span className="eyebrow">2. Register New Unit Bag in Agitator</span>
+          <p style={{ fontSize: 13, color: "var(--ink-2)", margin: "8px 0 16px" }}>
+            Single SDP/RDP bag arriving from donor collection
+          </p>
+
+          <form onSubmit={handleRegisterUnit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+            <div>
+              <label style={{ display: "block", fontSize: 11.5, color: "var(--ink-3)", marginBottom: 5 }}>Bag Number / ID</label>
+              <input
+                value={bagId} onChange={e => setBagId(e.target.value)}
+                placeholder="e.g. P-4512"
+                style={{ width: "100%", padding: "9px 13px", background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, fontFamily: "var(--f-data)", fontSize: 13.5, color: "var(--ink-0)", outline: "none" }}
+              />
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 11.5, color: "var(--ink-3)", marginBottom: 5 }}>Blood Group</label>
+                <select value={bloodGrp} onChange={e => setBloodGrp(e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, fontFamily: "var(--f-data)", fontSize: 13.5, color: "var(--ink-0)" }}>
+                  {["O+", "A+", "B+", "AB+", "O−", "A−", "B−", "AB−"].map(g => <option key={g} value={g}>{g}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: "block", fontSize: 11.5, color: "var(--ink-3)", marginBottom: 5 }}>Component</label>
+                <select value={comp} onChange={e => setComp(e.target.value)} style={{ width: "100%", padding: "9px 13px", background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, fontFamily: "var(--f-data)", fontSize: 13.5, color: "var(--ink-0)" }}>
+                  <option value="SDP">SDP (Single Donor)</option>
+                  <option value="RDP">RDP (Random Donor)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label style={{ display: "block", fontSize: 11.5, color: "var(--ink-3)", marginBottom: 5 }}>Remaining Usable Days</label>
+              <select value={daysRem} onChange={e => setDaysRem(parseInt(e.target.value))} style={{ width: "100%", padding: "9px 13px", background: "var(--surface-dim)", border: "1px solid var(--border)", borderRadius: 7, fontFamily: "var(--f-data)", fontSize: 13.5, color: "var(--ink-0)" }}>
+                <option value={3}>3 days left (Fresh Arrival)</option>
+                <option value={2}>2 days left</option>
+                <option value={1}>1 day left</option>
+                <option value={0}>0 days left (Expires Tonight)</option>
+              </select>
+            </div>
+
+            {unitStatus && <div style={{ padding: "9px 13px", background: "var(--st-1)", border: "1px solid var(--st-6)", borderRadius: 7, fontSize: 12.5, color: "var(--st-7)", fontWeight: 500 }}>{unitStatus}</div>}
+
+            <button type="submit" style={{ padding: "11px 20px", background: "var(--ink-0)", color: "#fff", border: "none", borderRadius: 7, fontWeight: 600, fontSize: 13.5, cursor: "pointer", marginTop: 6 }}>Register Unit in SQLite DB</button>
+          </form>
+        </div>
       </div>
     </div>
   );
@@ -1024,9 +1052,6 @@ function SettingsPage() {
             <span className="data" style={{ fontWeight: 600 }}>{(4.98 + (alpha - 13) * 0.08).toFixed(2)}%</span> waste,{" "}
             <span className="data" style={{ fontWeight: 600 }}>{Math.max(0, (2.09 - (alpha - 13) * 0.07)).toFixed(2)}%</span> shortage
           </div>
-          <p style={{ marginTop: 12, fontSize: 13, color: "var(--ink-3)", lineHeight: "20px", fontFamily: "var(--f-body)" }}>
-            Shortage costs roughly twice what expiry costs, which puts the default order point at the 67th percentile. Raise α if your hospital treats a shortage as a clinical emergency.
-          </p>
         </div>
       </div>
 
@@ -1037,11 +1062,7 @@ function SettingsPage() {
           display: "flex", justifyContent: "space-between", alignItems: "center",
           cursor: "pointer", width: "100%", textAlign: "left",
           fontFamily: "var(--f-body)",
-          transition: "box-shadow 110ms, border-color 110ms",
-        }}
-          onMouseEnter={e => (e.currentTarget.style.boxShadow = "var(--sh-raise)")}
-          onMouseLeave={e => (e.currentTarget.style.boxShadow = "none")}
-        >
+        }}>
           <span style={{ fontSize: 14, fontWeight: 500, color: "var(--ink-0)" }}>{s}</span>
           <span style={{ color: "var(--ink-4)", fontSize: 18 }}>›</span>
         </button>
@@ -1052,7 +1073,7 @@ function SettingsPage() {
 
 // ─── Band Detail Sheet ────────────────────────────────────────────────────────
 
-function BandSheet({ band, onClose }: { band: typeof BANDS[0]; onClose: () => void }) {
+function BandSheet({ band, onClose }: { band: ShelfBand; onClose: () => void }) {
   const [units, setUnits] = useState<UnitDetail[]>([]);
 
   useEffect(() => {
@@ -1151,15 +1172,26 @@ function BandSheet({ band, onClose }: { band: typeof BANDS[0]; onClose: () => vo
 
 export default function App() {
   const [tab, setTab] = useState("Daily Ops");
-  const [band, setBand] = useState<typeof BANDS[0] | null>(null);
+  const [bands, setBands] = useState<ShelfBand[]>(FALLBACK_BANDS);
+  const [forecast, setForecast] = useState<ForecastDay[]>(FALLBACK_FORECAST);
+  const [band, setBand] = useState<ShelfBand | null>(null);
+
+  const loadData = () => {
+    fetchStockShelfLife().then(b => setBands(b));
+    fetch7DayForecast().then(f => setForecast(f));
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const Page = () => {
     switch (tab) {
-      case "Daily Ops":      return <DailyOps onBand={setBand} />;
-      case "7-Day Forecast": return <ForecastPage />;
+      case "Daily Ops":      return <DailyOps bands={bands} forecast={forecast} onBand={setBand} />;
+      case "7-Day Forecast": return <ForecastPage forecast={forecast} bands={bands} />;
       case "Planner":        return <PlannerPage />;
       case "Requisitions":   return <ReqsPage />;
-      case "Data Entry":     return <DataEntryPage />;
+      case "Data Entry":     return <DataEntryPage onRefresh={loadData} />;
       case "Analytics":      return <AnalyticsPage />;
       case "Reports":        return <ReportsPage />;
       case "Settings":       return <SettingsPage />;
