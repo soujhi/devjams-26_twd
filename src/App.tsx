@@ -61,7 +61,7 @@ const NAV_ITEMS = [
   { id: "Data Entry", icon: "📥", label: "Data Ingestion" },
   { id: "Analytics", icon: "📉", label: "Analytics" },
   { id: "Reports", icon: "📑", label: "NABH Reports" },
-  { id: "Settings", icon: "⚙️", label: "System Policy" },
+  { id: "Settings", icon: "⚙️", label: "Settings" },
 ];
 
 const T = {
