@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@1,600&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import 'tailwindcss';
 
-html, body, #root { height: 100%; width: 100%; overflow: hidden; }
+html, body, #root { height: 100%; width: 100%; overflow: hidden; font-family: var(--f-body); }
 
 :root {
   /* ── Surfaces (Cool Clinical Grey-White, not cream) ── */
@@ -52,10 +52,10 @@ html, body, #root { height: 100%; width: 100%; overflow: hidden; }
   --line-strong: #C6CDD5;
 
   /* ── Fonts ── */
-  --f-disp: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
-  --f-body: 'IBM Plex Sans', system-ui, sans-serif;
-  --f-data: 'IBM Plex Mono', ui-monospace, monospace;
-  --f-quote: 'Caveat', cursive, serif;
+  --f-disp: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --f-body: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --f-data: 'JetBrains Mono', ui-monospace, monospace;
+  --f-quote: 'Playfair Display', Georgia, serif;
 
   /* ── Motion ── */
   --ease:   cubic-bezier(.2,.68,.28,1);
@@ -66,6 +66,18 @@ html, body, #root { height: 100%; width: 100%; overflow: hidden; }
   --sh-card:  0 1px 3px rgba(16,21,28,0.05), 0 1px 2px rgba(16,21,28,0.04);
   --sh-raise: 0 3px 10px rgba(16,21,28,0.07), 0 8px 20px rgba(16,21,28,0.06);
   --sh-modal: 0 12px 40px rgba(16,21,28,0.18);
+}
+
+@keyframes floatGlow {
+  0% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+  50% { transform: translate(30px, -20px) scale(1.1); opacity: 0.25; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.15; }
+}
+
+@keyframes pulseBorder {
+  0% { border-color: rgba(200,134,13,0.3); }
+  50% { border-color: rgba(200,134,13,0.7); }
+  100% { border-color: rgba(200,134,13,0.3); }
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
