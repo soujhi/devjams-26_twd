@@ -137,21 +137,21 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             fontSize: 11, color: "var(--am-4)", fontWeight: 700,
             letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 20,
           }}>
-            ⚡ Validated ML Research Pipeline ($\tau^* = 0.67$)
+            ⚡ AI-Powered Clinical Decision Engine
           </div>
 
           <h1 style={{
             fontFamily: "var(--f-disp)", fontSize: 40, fontWeight: 700,
-            color: "#fff", lineHeight: 1.15, letterSpacing: "-.02em", marginBottom: 18,
+            color: "#fff", lineHeight: 1.15, letterSpacing: "-.02em", marginBottom: 16,
           }}>
             Precision Platelet Inventory & Dengue Surge Intelligence.
           </h1>
 
           <p style={{
             fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: "24px",
-            fontFamily: "var(--f-body)", marginBottom: 36,
+            fontFamily: "var(--f-body)", marginBottom: 32,
           }}>
-            Eliminating blood bank inventory waste while protecting against critical shortages using Split-Conformal Quantile Calibration and WHO 2009 guideline concordance.
+            Intelligent collection recommendations and WHO guideline compliance review for hospital blood banks.
           </p>
 
           {/* 3 Real Metrics Grid */}
@@ -171,14 +171,14 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             }}>
               <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>TRAINING DAYS</div>
               <div className="data" style={{ fontSize: 24, fontWeight: 600, color: "#fff", margin: "4px 0 2px" }}>4,018</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>RWTH Aachen dataset</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Real issue logs</div>
             </div>
 
             <div style={{
               background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
               borderRadius: 10, padding: "14px 16px",
             }}>
-              <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>COVERAGE Target</div>
+              <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>TARGET COVERAGE</div>
               <div className="data" style={{ fontSize: 24, fontWeight: 600, color: "var(--st-6)", margin: "4px 0 2px" }}>70.2%</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>7-day rolling window</div>
             </div>
@@ -785,35 +785,33 @@ function PlannerPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {/* Plain-English Explanation Banner */}
+      {/* Clean Top Banner */}
       <div style={{
         background: "var(--surface)", border: "1px solid var(--border)",
         borderRadius: 12, boxShadow: "var(--sh-card)", padding: "20px 24px",
-        display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20, alignItems: "center",
+        display: "flex", justifyContent: "space-between", alignItems: "center",
       }}>
         <div>
-          <div className="eyebrow" style={{ color: "var(--am-7)", marginBottom: 6 }}>HOW DENGUE SURGE PLANNING WORKS</div>
-          <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--ink-0)", fontFamily: "var(--f-disp)", margin: "0 0 8px" }}>
-            Seasonal Donation Camp Scheduling
+          <div className="eyebrow" style={{ color: "var(--am-7)", marginBottom: 4 }}>TACTICAL SCHEDULER</div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--ink-0)", fontFamily: "var(--f-disp)", margin: 0 }}>
+            Six-Month Mobile Donor Camp Planning
           </h2>
-          <p style={{ fontSize: 13, color: "var(--ink-1)", lineHeight: "20px", fontFamily: "var(--f-body)" }}>
-            Platelets expire in 5 days. During dengue outbreaks, hospital transfusion requests spike dramatically.
-            The **Dengue Share ($f = 0.15$)** represents the share of hospital demand caused by dengue cases (15%).
-            We multiply seasonal dengue incidence by $f$ to calculate the <strong>Surge Multiplier</strong> for each month so camp organizers can book mobile donor vans ahead of time.
+          <p style={{ fontSize: 13, color: "var(--ink-2)", fontFamily: "var(--f-body)", marginTop: 4 }}>
+            Schedule mobile donation camps in advance to prepare for seasonal surge periods.
           </p>
         </div>
 
-        {/* Interactive Parameter Dial */}
+        {/* Simple Slider */}
         <div style={{
-          padding: "16px 18px", background: "var(--sunken)",
+          width: 320, padding: "14px 16px", background: "var(--sunken)",
           border: "1px solid var(--border)", borderRadius: 10,
         }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-0)", fontFamily: "var(--f-body)" }}>
-              Dengue Share Parameter ($f$)
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 6 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: "var(--ink-0)", fontFamily: "var(--f-body)" }}>
+              Outbreak Sensitivity ($f$)
             </span>
-            <span className="data" style={{ fontSize: 17, color: "var(--am-7)", fontWeight: 700 }}>
-              f = {(f * 100).toFixed(0)}%
+            <span className="data" style={{ fontSize: 15, color: "var(--am-7)", fontWeight: 700 }}>
+              {(f * 100).toFixed(0)}%
             </span>
           </div>
 
@@ -822,14 +820,9 @@ function PlannerPage() {
             style={{ width: "100%", accentColor: "var(--am-6)", cursor: "pointer" }} />
 
           <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "var(--ink-3)", marginTop: 4 }}>
-            <span>5% (Low Outbreak)</span>
-            <span>15% (Default)</span>
-            <span>30% (Severe Outbreak)</span>
-          </div>
-
-          <div style={{ marginTop: 10, fontSize: 12, color: "var(--ink-2)", fontFamily: "var(--f-body)" }}>
-            Total 6-month target: <strong style={{ color: "var(--ink-0)" }}>{coll.toLocaleString()} units</strong> (~3% change across range).
-            Adjusting $f$ shifts <em>when</em> camps are held, not <em>total volume</em>.
+            <span>Low (5%)</span>
+            <span>Standard (15%)</span>
+            <span>High (30%)</span>
           </div>
         </div>
       </div>
