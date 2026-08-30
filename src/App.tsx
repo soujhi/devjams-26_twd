@@ -61,7 +61,6 @@ const NAV_ITEMS = [
   { id: "Data Entry", icon: "📥", label: "Data Ingestion" },
   { id: "Analytics", icon: "📉", label: "Analytics" },
   { id: "Reports", icon: "📑", label: "NABH Reports" },
-  { id: "Settings", icon: "⚙️", label: "Settings" },
 ];
 
 const T = {
@@ -1620,7 +1619,6 @@ export default function App() {
       case "Data Entry":     return <DataEntryPage onRefresh={loadData} />;
       case "Analytics":      return <AnalyticsPage />;
       case "Reports":        return <ReportsPage />;
-      case "Settings":       return <SettingsPage />;
       default: return null;
     }
   };
