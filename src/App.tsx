@@ -97,76 +97,77 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
       onMouseMove={handleMouseMove}
       style={{
         minHeight: "100vh", width: "100vw", display: "flex", flexDirection: "column",
-        alignItems: "center", justifyContent: "center", background: "#090D12",
-        color: "#fff", position: "relative", overflow: "hidden", padding: "24px",
+        alignItems: "center", justifyContent: "center", background: "#FAFAFD",
+        color: "var(--ink-0)", position: "relative", overflow: "hidden", padding: "24px",
       }}>
-      {/* Interactive Mouse Spotlight Radial Glow */}
+      {/* Soft Ambient Warm Glow Spotlights */}
       <div style={{
         position: "absolute",
         top: mousePos.y - 300,
         left: mousePos.x - 300,
         width: "600px", height: "600px", borderRadius: "50%",
-        background: "radial-gradient(circle, rgba(200,134,13,0.14) 0%, rgba(31,95,139,0.06) 40%, transparent 70%)",
+        background: "radial-gradient(circle, rgba(200,134,13,0.1) 0%, rgba(31,95,139,0.04) 40%, transparent 70%)",
         pointerEvents: "none", transition: "transform 80ms ease-out",
       }} />
 
-      {/* Floating Animated Mesh Orbs */}
       <div style={{
-        position: "absolute", top: "15%", left: "10%", width: "450px", height: "450px",
-        borderRadius: "50%", background: "radial-gradient(circle, rgba(200,134,13,0.12) 0%, transparent 70%)",
-        animation: "floatGlow 8s ease-in-out infinite", pointerEvents: "none",
+        position: "absolute", top: "10%", left: "15%", width: "500px", height: "500px",
+        borderRadius: "50%", background: "radial-gradient(circle, rgba(247,227,180,0.4) 0%, transparent 70%)",
+        animation: "floatGlow 10s ease-in-out infinite", pointerEvents: "none",
       }} />
       <div style={{
-        position: "absolute", bottom: "10%", right: "12%", width: "500px", height: "500px",
-        borderRadius: "50%", background: "radial-gradient(circle, rgba(31,95,139,0.15) 0%, transparent 70%)",
+        position: "absolute", bottom: "10%", right: "15%", width: "500px", height: "500px",
+        borderRadius: "50%", background: "radial-gradient(circle, rgba(226,238,246,0.6) 0%, transparent 70%)",
         animation: "floatGlow 12s ease-in-out infinite reverse", pointerEvents: "none",
       }} />
 
-      {/* Devfolio-Style Centered Container */}
+      {/* Centered Devfolio Container */}
       <div style={{
         width: "100%", maxWidth: 430, position: "relative", zIndex: 2,
         display: "flex", flexDirection: "column", alignItems: "center"
       }}>
-        {/* Handwriting / Serif Quote at Top */}
+        {/* Playfair Display Italic Quote */}
         <div style={{
-          fontFamily: "var(--f-quote)", fontSize: 34, fontStyle: "italic", fontWeight: 600,
-          color: "var(--am-4)", textAlign: "center", marginBottom: 28,
-          lineHeight: 1.25, textShadow: "0 2px 14px rgba(200,134,13,0.3)"
+          fontFamily: "var(--f-quote)", fontSize: 36, fontStyle: "italic", fontWeight: 600,
+          color: "var(--am-7)", textAlign: "center", marginBottom: 28,
+          lineHeight: 1.25, letterSpacing: "-.01em"
         }}>
           “Every unit saved is a life sustained.”
         </div>
 
-        {/* Devfolio Interactive Login Card */}
+        {/* Aesthetic White Card with Light Orange / Amber Border */}
         <div style={{
-          width: "100%", background: "#141A21", border: "1px solid #28313D",
-          borderRadius: 16, padding: "38px 34px", boxShadow: "0 20px 50px rgba(0,0,0,0.5)",
-          backdropFilter: "blur(12px)", transition: "all 200ms ease"
+          width: "100%", background: "#FFFFFF",
+          border: "2px solid var(--am-2)",
+          borderRadius: 16, padding: "38px 34px",
+          boxShadow: "0 16px 40px rgba(200,134,13,0.12), 0 2px 8px rgba(16,21,28,0.04)",
+          transition: "all 200ms ease"
         }}>
-          {/* Header Branding - Clean Text Only (No Icon) */}
+          {/* Header Branding - Clean Text (No Icon) */}
           <div style={{ textAlign: "center", marginBottom: 28 }}>
             <div style={{
-              fontFamily: "var(--f-disp)", fontSize: 24, fontWeight: 800,
-              color: "#fff", letterSpacing: "-.02em"
+              fontFamily: "var(--f-disp)", fontSize: 26, fontWeight: 800,
+              color: "var(--ink-0)", letterSpacing: "-.02em"
             }}>
               PlateletIQ
             </div>
-            <div style={{ fontSize: 11, color: "var(--am-4)", fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", marginTop: 2 }}>
+            <div style={{ fontSize: 11, color: "var(--am-7)", fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase", marginTop: 3 }}>
               Clinical Decision Support
             </div>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
                 Hospital Facility
               </label>
               <select
                 value={facility} onChange={e => setFacility(e.target.value)}
                 style={{
                   width: "100%", padding: "11px 14px",
-                  background: "#0A0E13", border: "1px solid #28313D",
+                  background: "#F8FAFC", border: "1.5px solid var(--border)",
                   borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13,
-                  color: "#C9D1D9", outline: "none", transition: "border 150ms ease"
+                  color: "var(--ink-0)", outline: "none", transition: "border 150ms ease"
                 }}>
                 <option value="Govt. General Hospital, Chennai">Govt. General Hospital, Chennai</option>
                 <option value="Apollo Hospitals, Greams Road">Apollo Hospitals, Greams Road</option>
@@ -176,16 +177,16 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
                 User Role
               </label>
               <select
                 value={role} onChange={e => setRole(e.target.value)}
                 style={{
                   width: "100%", padding: "11px 14px",
-                  background: "#0A0E13", border: "1px solid #28313D",
+                  background: "#F8FAFC", border: "1.5px solid var(--border)",
                   borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13,
-                  color: "#C9D1D9", outline: "none"
+                  color: "var(--ink-0)", outline: "none"
                 }}>
                 <option value="Shift Technician">Shift Technician</option>
                 <option value="Blood Bank Officer">Blood Bank Officer</option>
@@ -194,7 +195,7 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
                 Operator ID / Email
               </label>
               <input
@@ -202,15 +203,15 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
                 required
                 style={{
                   width: "100%", padding: "11px 14px",
-                  background: "#0A0E13", border: "1px solid #28313D",
+                  background: "#F8FAFC", border: "1.5px solid var(--border)",
                   borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
-                  color: "#C9D1D9", outline: "none"
+                  color: "var(--ink-0)", outline: "none"
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
                 Password
               </label>
               <input
@@ -218,9 +219,9 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
                 required
                 style={{
                   width: "100%", padding: "11px 14px",
-                  background: "#0A0E13", border: "1px solid #28313D",
+                  background: "#F8FAFC", border: "1.5px solid var(--border)",
                   borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
-                  color: "#C9D1D9", outline: "none"
+                  color: "var(--ink-0)", outline: "none"
                 }}
               />
             </div>
@@ -229,10 +230,9 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
               type="submit"
               style={{
                 width: "100%", padding: "13px",
-                background: "linear-gradient(135deg, var(--am-6), var(--am-5))",
-                border: "none", borderRadius: 8,
+                background: "var(--am-6)", border: "none", borderRadius: 8,
                 fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700,
-                color: "#fff", cursor: "pointer", boxShadow: "0 6px 20px rgba(200,134,13,0.35)",
+                color: "#fff", cursor: "pointer", boxShadow: "0 4px 14px rgba(200,134,13,0.3)",
                 transition: "all 150ms ease", marginTop: 8
               }}>
               Sign In →
