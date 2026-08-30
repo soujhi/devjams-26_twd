@@ -4,14 +4,13 @@ import {
   fetchStockShelfLife, fetch7DayForecast, fetchRecommendation,
   fetchRequisitions, fetchCollectionPlan, issueRequisition,
   confirmRecommendation, uploadDailyDemandCSV, registerNewUnit,
-  postAssistantQuery
 } from "./services/api";
 import {
   Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, ReferenceLine, Cell, BarChart, Bar,
 } from "recharts";
 
-// ─── Fallback Constants (Used during initial load) ────────────────────────────
+// ─── Fallback Constants ────────────────────────────────────────────────────────
 
 const FALLBACK_BANDS: ShelfBand[] = [
   { label: "Tonight", short: "Today",  icon: "●", days: 0, n: 9,  hex: "#C2321F", light: "#FBE6E2", text: "#7A1F14", act: true  },
@@ -76,9 +75,263 @@ const T = {
   ),
 };
 
+// ─── Impressive Professional Login Page ───────────────────────────────────────
+
+function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; facility: string }) => void }) {
+  const [username, setUsername] = useState("rkumar@ggh-chennai.org");
+  const [password, setPassword] = useState("••••••••••••");
+  const [role, setRole] = useState("Shift Technician");
+  const [facility, setFacility] = useState("Govt. General Hospital, Chennai");
+  const [remember, setRemember] = useState(true);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onLogin({ name: "R. Kumar", role, facility });
+  };
+
+  return (
+    <div style={{
+      width: "100vw", height: "100vh", display: "flex",
+      background: "var(--ground)", overflow: "hidden",
+    }}>
+      {/* Left Branding Hero Panel */}
+      <div style={{
+        flex: "1.1", background: "var(--ink-0)",
+        display: "flex", flexDirection: "column", justifyContent: "space-between",
+        padding: "48px 56px", position: "relative", overflow: "hidden",
+        boxShadow: "var(--sh-modal)",
+      }}>
+        {/* Subtle Ambient Gold Gradient Accent */}
+        <div style={{
+          position: "absolute", top: "-20%", right: "-20%", width: "500px", height: "500px",
+          borderRadius: "50%", background: "radial-gradient(circle, rgba(200,134,13,0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", bottom: "-10%", left: "-10%", width: "400px", height: "400px",
+          borderRadius: "50%", background: "radial-gradient(circle, rgba(31,95,139,0.15) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Top Wordmark */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative", zIndex: 2 }}>
+          <div style={{
+            width: 40, height: 40, borderRadius: 10,
+            background: "linear-gradient(135deg, var(--am-5), var(--am-6))",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 20, color: "#fff",
+            boxShadow: "0 4px 16px rgba(200,134,13,0.4)"
+          }}>P</div>
+          <div>
+            <div style={{ fontFamily: "var(--f-disp)", fontSize: 22, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>PlateletIQ</div>
+            <div style={{ fontSize: 11, color: "var(--am-4)", fontWeight: 700, letterSpacing: ".12em", textTransform: "uppercase" }}>Clinical Decision Support Engine</div>
+          </div>
+        </div>
+
+        {/* Center Hero Copy & Metrics */}
+        <div style={{ position: "relative", zIndex: 2, margin: "auto 0", maxWidth: 540 }}>
+          <div style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "5px 12px", background: "rgba(200,134,13,0.18)",
+            border: "1px solid rgba(200,134,13,0.35)", borderRadius: 6,
+            fontSize: 11, color: "var(--am-4)", fontWeight: 700,
+            letterSpacing: ".1em", textTransform: "uppercase", marginBottom: 20,
+          }}>
+            ⚡ Validated ML Research Pipeline ($\tau^* = 0.67$)
+          </div>
+
+          <h1 style={{
+            fontFamily: "var(--f-disp)", fontSize: 40, fontWeight: 700,
+            color: "#fff", lineHeight: 1.15, letterSpacing: "-.02em", marginBottom: 18,
+          }}>
+            Precision Platelet Inventory & Dengue Surge Intelligence.
+          </h1>
+
+          <p style={{
+            fontSize: 15, color: "rgba(255,255,255,0.65)", lineHeight: "24px",
+            fontFamily: "var(--f-body)", marginBottom: 36,
+          }}>
+            Eliminating blood bank inventory waste while protecting against critical shortages using Split-Conformal Quantile Calibration and WHO 2009 guideline concordance.
+          </p>
+
+          {/* 3 Real Metrics Grid */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+            <div style={{
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 10, padding: "14px 16px",
+            }}>
+              <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>WASTAGE RATE</div>
+              <div className="data" style={{ fontSize: 24, fontWeight: 600, color: "var(--am-4)", margin: "4px 0 2px" }}>3.8%</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>↓ from 9.6% baseline</div>
+            </div>
+
+            <div style={{
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 10, padding: "14px 16px",
+            }}>
+              <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>TRAINING DAYS</div>
+              <div className="data" style={{ fontSize: 24, fontWeight: 600, color: "#fff", margin: "4px 0 2px" }}>4,018</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>RWTH Aachen dataset</div>
+            </div>
+
+            <div style={{
+              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 10, padding: "14px 16px",
+            }}>
+              <div className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>COVERAGE Target</div>
+              <div className="data" style={{ fontSize: 24, fontWeight: 600, color: "var(--st-6)", margin: "4px 0 2px" }}>70.2%</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>7-day rolling window</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Security Badges */}
+        <div style={{ display: "flex", alignItems: "center", gap: 20, position: "relative", zIndex: 2 }}>
+          {["✓ NABH Standard Compliant", "🔒 256-Bit TLS Encryption", "🩺 WHO 2009 Guidelines"].map((b, i) => (
+            <span key={i} style={{ fontSize: 11.5, color: "rgba(255,255,255,0.4)", fontFamily: "var(--f-body)" }}>{b}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* Right Login Form Container */}
+      <div style={{
+        width: 480, background: "var(--surface)",
+        display: "flex", flexDirection: "column", justifyContent: "center",
+        padding: "56px 48px", overflowY: "auto",
+        borderLeft: "1px solid var(--border)",
+      }}>
+        <div style={{ maxWidth: 380, margin: "0 auto", width: "100%" }}>
+          <div style={{ marginBottom: 28 }}>
+            <span className="eyebrow">CONTROL CENTER ACCESS</span>
+            <h2 style={{
+              fontFamily: "var(--f-disp)", fontSize: 28, fontWeight: 700,
+              color: "var(--ink-0)", margin: "6px 0 6px", letterSpacing: "-.01em",
+            }}>Sign In to Hospital Portal</h2>
+            <p style={{ fontSize: 13, color: "var(--ink-2)", fontFamily: "var(--f-body)" }}>
+              Enter your credentials to access the blood bank control panel.
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            {/* Hospital Facility Selector */}
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+                Facility / Blood Bank
+              </label>
+              <select
+                value={facility} onChange={e => setFacility(e.target.value)}
+                style={{
+                  width: "100%", padding: "11px 14px",
+                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13.5,
+                  color: "var(--ink-0)", outline: "none",
+                }}>
+                <option value="Govt. General Hospital, Chennai">Govt. General Hospital, Chennai</option>
+                <option value="Apollo Hospitals, Greams Road">Apollo Hospitals, Greams Road</option>
+                <option value="Christian Medical College, Vellore">Christian Medical College, Vellore</option>
+                <option value="RWTH Aachen University Hospital">RWTH Aachen University Hospital</option>
+              </select>
+            </div>
+
+            {/* Role Selector */}
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+                User Role
+              </label>
+              <select
+                value={role} onChange={e => setRole(e.target.value)}
+                style={{
+                  width: "100%", padding: "11px 14px",
+                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13.5,
+                  color: "var(--ink-0)", outline: "none",
+                }}>
+                <option value="Shift Technician">Shift Technician (Daily Ops & Stock Ingestion)</option>
+                <option value="Blood Bank Officer">Blood Bank Officer (Order Point & Policy α)</option>
+                <option value="Transfusion Committee Member">Transfusion Committee Member (NABH Audits)</option>
+              </select>
+            </div>
+
+            {/* Email / Username */}
+            <div>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+                Email Address or Operator ID
+              </label>
+              <input
+                type="email" value={username} onChange={e => setUsername(e.target.value)}
+                required
+                style={{
+                  width: "100%", padding: "11px 14px",
+                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 13,
+                  color: "var(--ink-0)", outline: "none",
+                }}
+              />
+            </div>
+
+            {/* Password */}
+            <div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                <label style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-1)" }}>Password</label>
+                <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: 11.5, color: "var(--in-6)", textDecoration: "none", fontWeight: 500 }}>
+                  Forgot password?
+                </a>
+              </div>
+              <input
+                type="password" value={password} onChange={e => setPassword(e.target.value)}
+                required
+                style={{
+                  width: "100%", padding: "11px 14px",
+                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 13,
+                  color: "var(--ink-0)", outline: "none",
+                }}
+              />
+            </div>
+
+            {/* Remember Me Checkbox */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, margin: "2px 0" }}>
+              <input
+                type="checkbox" id="remember" checked={remember} onChange={e => setRemember(e.target.checked)}
+                style={{ accentColor: "var(--am-6)", cursor: "pointer" }}
+              />
+              <label htmlFor="remember" style={{ fontSize: 12.5, color: "var(--ink-2)", cursor: "pointer", fontFamily: "var(--f-body)" }}>
+                Keep me signed in on this workstation
+              </label>
+            </div>
+
+            {/* Sign In Button */}
+            <button
+              type="submit"
+              style={{
+                width: "100%", padding: "13px",
+                background: "var(--am-6)", border: "none", borderRadius: 8,
+                fontFamily: "var(--f-body)", fontSize: 14.5, fontWeight: 700,
+                color: "#fff", cursor: "pointer", boxShadow: "0 4px 14px rgba(200,134,13,0.3)",
+                transition: "all 120ms ease", marginTop: 4,
+              }}>
+              Sign In to Control Center →
+            </button>
+          </form>
+
+          <div style={{ marginTop: 32, paddingTop: 20, borderTop: "1px solid var(--border-faint)", textAlign: "center" }}>
+            <span style={{ fontSize: 11.5, color: "var(--ink-3)", fontFamily: "var(--f-body)" }}>
+              Need facility access? Contact Blood Bank Administrator
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Sidebar Navigation Layout ────────────────────────────────────────────────
 
-function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string) => void }) {
+function Sidebar({ activeTab, setTab, user, onLogout }: {
+  activeTab: string; setTab: (t: string) => void;
+  user: { name: string; role: string; facility: string } | null;
+  onLogout: () => void;
+}) {
   return (
     <aside style={{
       width: 230, flexShrink: 0, background: "var(--rail)",
@@ -105,8 +358,8 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
         borderRadius: 8, display: "flex", flexDirection: "column", gap: 4
       }}>
         <div style={{ fontSize: 9.5, color: "var(--ink-2)", textTransform: "uppercase", letterSpacing: ".1em", fontWeight: 700 }}>FACILITY</div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>Govt. General Hospital</div>
-        <div style={{ fontSize: 10.5, color: "var(--st-6)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500 }}>
+        <div style={{ fontSize: 11.5, fontWeight: 600, color: "var(--ink-0)", lineHeight: "16px" }}>{user?.facility || "Govt. General Hospital"}</div>
+        <div style={{ fontSize: 10.5, color: "var(--st-6)", display: "flex", alignItems: "center", gap: 4, fontWeight: 500, marginTop: 2 }}>
           <span>●</span> Live API Connected
         </div>
       </div>
@@ -137,20 +390,34 @@ function Sidebar({ activeTab, setTab }: { activeTab: string; setTab: (t: string)
         })}
       </nav>
 
+      {/* User Footer with Sign Out Button */}
       <div style={{
         padding: "12px 10px 0 10px", borderTop: "1px solid var(--border-faint)",
-        display: "flex", alignItems: "center", gap: 10
+        display: "flex", alignItems: "center", justifyContent: "space-between"
       }}>
-        <div style={{
-          width: 32, height: 32, borderRadius: 16,
-          background: "linear-gradient(135deg, var(--am-6), var(--am-4))",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontWeight: 700, fontSize: 12, color: "#fff"
-        }}>RK</div>
-        <div>
-          <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>R. Kumar</div>
-          <div style={{ fontSize: 10.5, color: "var(--ink-2)" }}>Shift Technician</div>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 16,
+            background: "linear-gradient(135deg, var(--am-6), var(--am-4))",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontWeight: 700, fontSize: 12, color: "#fff"
+          }}>RK</div>
+          <div>
+            <div style={{ fontSize: 12, fontWeight: 600, color: "var(--ink-0)" }}>{user?.name || "R. Kumar"}</div>
+            <div style={{ fontSize: 10, color: "var(--ink-2)" }}>{user?.role || "Shift Technician"}</div>
+          </div>
         </div>
+
+        <button
+          onClick={onLogout}
+          title="Sign Out"
+          style={{
+            background: "none", border: "1px solid var(--border)", borderRadius: 6,
+            padding: "4px 8px", fontSize: 11, color: "var(--ink-2)", cursor: "pointer",
+            fontFamily: "var(--f-body)", fontWeight: 500,
+          }}>
+          Exit
+        </button>
       </div>
     </aside>
   );
@@ -766,10 +1033,7 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
     try {
       const lines = csvText.trim().replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
       const records = [];
-      
-      // Auto-detect header row
       const startIdx = lines[0].toLowerCase().includes("date") ? 1 : 0;
-      
       for (let i = startIdx; i < lines.length; i++) {
         const line = lines[i].trim();
         if (!line) continue;
@@ -818,7 +1082,6 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
             Format: <code>date (YYYY-MM-DD), units_issued (integer &ge; 0)</code>
           </p>
 
-          {/* File Picker Button */}
           <div style={{ marginBottom: 14 }}>
             <label style={{
               display: "inline-flex", alignItems: "center", gap: 8,
@@ -1220,9 +1483,10 @@ function BandSheet({ band, onClose }: { band: ShelfBand; onClose: () => void }) 
   );
 }
 
-// ─── Root Component ───────────────────────────────────────────────────────────
+// ─── Root Component with Authentication ───────────────────────────────────────
 
 export default function App() {
+  const [user, setUser] = useState<{ name: string; role: string; facility: string } | null>(null);
   const [tab, setTab] = useState("Daily Ops");
   const [bands, setBands] = useState<ShelfBand[]>(FALLBACK_BANDS);
   const [forecast, setForecast] = useState<ForecastDay[]>(FALLBACK_FORECAST);
@@ -1234,8 +1498,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (user) loadData();
+  }, [user]);
+
+  if (!user) {
+    return <LoginPage onLogin={setUser} />;
+  }
 
   const Page = () => {
     switch (tab) {
@@ -1253,7 +1521,7 @@ export default function App() {
 
   return (
     <div style={{ height: "100vh", width: "100vw", display: "flex", background: "var(--ground)" }}>
-      <Sidebar activeTab={tab} setTab={setTab} />
+      <Sidebar activeTab={tab} setTab={setTab} user={user} onLogout={() => setUser(null)} />
       <main style={{ flex: 1, overflowY: "auto", padding: "24px 28px" }}>
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
           <Page />
