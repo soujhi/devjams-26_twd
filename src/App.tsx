@@ -827,20 +827,20 @@ function PlannerPage() {
         </div>
       </div>
 
-      {/* Main Camp Schedule Table */}
+      {/* Main Camp Schedule Table - Technician View */}
       <div style={{
         background: "var(--surface)", border: "1px solid var(--border)",
         borderRadius: 12, boxShadow: "var(--sh-card)", padding: "22px 24px",
       }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
           <div>
-            {T.eyebrow("RECOMMENDED MOBILE DONOR CAMP SCHEDULE")}
+            {T.eyebrow("TACTICAL MOBILE CAMP SCHEDULE")}
             <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink-0)", fontFamily: "var(--f-disp)", marginTop: 4 }}>
-              Target Collection & Recommended Camp Date Windows
+              Donor Camp Dates & Collection Targets
             </h3>
           </div>
           <span style={{ fontSize: 11.5, color: "var(--st-6)", fontWeight: 600, background: "var(--st-1)", padding: "4px 10px", borderRadius: 6 }}>
-            ● Lead Time: Schedule Camps 14 Days Prior
+            ● Schedule Camps 14 Days Prior
           </span>
         </div>
 
@@ -848,11 +848,11 @@ function PlannerPage() {
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "var(--sunken)" }}>
-                {["Month", "Dengue Index", "Surge Multiplier", "Baseline Needed", "Target Collection", "Camps Needed", "Recommended Camp Window", "Action"].map(h => (
+                {["Month", "Target Collection", "Camps to Book", "Recommended Camp Dates"].map(h => (
                   <th key={h} style={{
-                    padding: "10px 14px",
-                    textAlign: h === "Month" || h === "Recommended Camp Window" || h === "Action" ? "left" : "right",
-                    fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
+                    padding: "11px 16px",
+                    textAlign: h === "Target Collection" || h === "Camps to Book" ? "right" : "left",
+                    fontSize: 11, fontWeight: 700, fontFamily: "var(--f-body)",
                     color: "var(--ink-2)", letterSpacing: ".05em", textTransform: "uppercase",
                     borderBottom: "1px solid var(--border)",
                   }}>{h}</th>
@@ -867,41 +867,17 @@ function PlannerPage() {
                     background: isPeak ? "rgba(200,134,13,0.04)" : undefined,
                     borderBottom: "1px solid var(--border-faint)",
                   }}>
-                    <td style={{ padding: "12px 14px", fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>
-                      {r.mo}
+                    <td style={{ padding: "14px 16px", fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>
+                      {r.mo} {isPeak && <span style={{ fontSize: 11, color: "var(--cr-6)", marginLeft: 6, fontWeight: 600 }}>• Dengue Peak</span>}
                     </td>
-                    <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-1)" }}>
-                      {r.dengue.toFixed(2)}×
+                    <td className="data" style={{ padding: "14px 16px", textAlign: "right", fontSize: 15, fontWeight: 700, color: "var(--am-7)" }}>
+                      {r.collect} units
                     </td>
-                    <td className="data" style={{
-                      padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: isPeak ? 700 : 500,
-                      color: isPeak ? "var(--cr-6)" : "var(--ink-0)",
-                    }}>
-                      {r.surge.toFixed(2)}×
+                    <td className="data" style={{ padding: "14px 16px", textAlign: "right", fontSize: 14, fontWeight: 600, color: "var(--ink-0)" }}>
+                      {r.camps} camps
                     </td>
-                    {[r.needed, r.collect].map((v, j) => (
-                      <td key={j} className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: j === 1 ? 700 : 400, color: j === 1 ? "var(--am-7)" : "var(--ink-0)" }}>
-                        {v}
-                      </td>
-                    ))}
-                    <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 600, color: "var(--ink-0)" }}>
-                      {r.camps}
-                    </td>
-                    <td style={{ padding: "12px 14px", fontFamily: "var(--f-data)", fontSize: 13, fontWeight: 600, color: isPeak ? "var(--am-7)" : "var(--ink-0)" }}>
+                    <td style={{ padding: "14px 16px", fontFamily: "var(--f-data)", fontSize: 13.5, fontWeight: 600, color: isPeak ? "var(--am-7)" : "var(--ink-0)" }}>
                       📅 {r.camp_window || `${r.mo} 10 – ${r.mo} 18`}
-                    </td>
-                    <td style={{ padding: "12px 14px" }}>
-                      <span style={{
-                        display: "inline-flex", alignItems: "center", gap: 4,
-                        padding: "4px 10px", borderRadius: 6,
-                        fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
-                        textTransform: "uppercase", letterSpacing: ".06em",
-                        background: r.dir === "up" ? "var(--wa-1)" : r.dir === "dn" ? "var(--st-1)" : "var(--sunken)",
-                        color: r.dir === "up" ? "var(--wa-7)" : r.dir === "dn" ? "var(--st-7)" : "var(--ink-2)",
-                        border: `1px solid ${r.dir === "up" ? "rgba(181,115,10,0.3)" : "rgba(0,0,0,0.1)"}`
-                      }}>
-                        {r.dir === "up" ? "▲ Scale Up Camps" : r.dir === "dn" ? "▼ Reduce Camps" : "■ Hold Camps"}
-                      </span>
                     </td>
                   </tr>
                 );
@@ -909,13 +885,10 @@ function PlannerPage() {
             </tbody>
             <tfoot>
               <tr style={{ borderTop: "2px solid var(--border)", background: "var(--sunken)" }}>
-                <td style={{ padding: "12px 14px", fontFamily: "var(--f-body)", fontWeight: 700, fontSize: 14, color: "var(--ink-0)" }}>6-Month Total</td>
-                <td /><td />
-                {[2232, coll].map((v, j) => (
-                  <td key={j} className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 700, color: j === 1 ? "var(--am-7)" : "var(--ink-0)" }}>{v.toLocaleString()}</td>
-                ))}
-                <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>26.4 camps</td>
-                <td /><td />
+                <td style={{ padding: "14px 16px", fontFamily: "var(--f-body)", fontWeight: 700, fontSize: 14, color: "var(--ink-0)" }}>6-Month Total</td>
+                <td className="data" style={{ padding: "14px 16px", textAlign: "right", fontSize: 15, fontWeight: 700, color: "var(--am-7)" }}>{coll.toLocaleString()} units</td>
+                <td className="data" style={{ padding: "14px 16px", textAlign: "right", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>26 camps</td>
+                <td />
               </tr>
             </tfoot>
           </table>
