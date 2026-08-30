@@ -491,7 +491,7 @@ function ShelfStrip({ bands, onBand }: { bands: ShelfBand[]; onBand: (b: ShelfBa
 
 function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: ForecastDay[]; onBand: (b: ShelfBand) => void }) {
   const [confirmed, setConfirmed] = useState(false);
-  const [rec, setRec] = useState<{ verb: string; quantity: number; order_point: number } | null>(null);
+  const [rec, setRec] = useState<{ verb: string; quantity: number; order_point: number; drivers: { dir: string; text: string; delta: string }[] } | null>(null);
 
   useEffect(() => {
     fetchRecommendation().then(data => {
@@ -501,6 +501,7 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
 
   const actionVerb = rec ? rec.verb : "COLLECT";
   const actionQty = rec ? rec.quantity : 16;
+  const driversList = rec && rec.drivers && rec.drivers.length > 0 ? rec.drivers : DRIVERS;
   const expiringTonight = bands.find(b => b.days === 0)?.n || 9;
 
   const handleConfirm = async () => {
@@ -632,11 +633,11 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
         <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "20px 22px", boxShadow: "var(--sh-card)" }}>
           <span className="eyebrow">WHY THIS NUMBER (FEATURE ATTRIBUTIONS)</span>
           <div style={{ marginTop: 16 }}>
-            {DRIVERS.map((d, i) => (
-              <div key={i} style={{ display: "grid", gridTemplateColumns: "16px 1fr auto", gap: 12, alignItems: "baseline", padding: "11px 0", borderBottom: i < DRIVERS.length - 1 ? "1px solid var(--border-faint)" : "none" }}>
+            {driversList.map((d, i) => (
+              <div key={i} style={{ display: "grid", gridTemplateColumns: "16px 1fr auto", gap: 12, alignItems: "baseline", padding: "11px 0", borderBottom: i < driversList.length - 1 ? "1px solid var(--border-faint)" : "none" }}>
                 <span style={{ fontSize: 14, fontWeight: 700, color: d.dir === "↑" ? "var(--cr-6)" : "var(--st-6)" }}>{d.dir}</span>
                 <span style={{ fontSize: 13.5, color: "var(--ink-1)" }}>{d.text}</span>
-                <span className="data" style={{ fontSize: 12.5, fontWeight: 600, color: d.dir === "↑" ? "var(--cr-7)" : "var(--st-7)" }}>{d.delta} u</span>
+                <span className="data" style={{ fontSize: 12.5, fontWeight: 600, color: d.dir === "↑" ? "var(--cr-7)" : "var(--st-7)" }}>{d.delta}</span>
               </div>
             ))}
           </div>
