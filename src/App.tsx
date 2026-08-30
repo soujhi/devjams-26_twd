@@ -77,40 +77,39 @@ const T = {
 
 // ─── Impressive Professional Login Page ───────────────────────────────────────
 
-function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; facility: string }) => void }) {
-  const [username, setUsername] = useState("rkumar@ggh.gov.in");
-  const [password, setPassword] = useState("••••••••••••");
+function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; facility: string }) => void }) {
   const [facility, setFacility] = useState("Govt. General Hospital, Chennai");
   const [role, setRole] = useState("Shift Technician");
+  const [username, setUsername] = useState("rkumar@ggh.gov.in");
+  const [password, setPassword] = useState("••••••••••••");
   const [remember, setRemember] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin({ name: username.split("@")[0].toUpperCase() || "R. KUMAR", role, facility });
+    onLogin({ name: "R. Kumar", role, facility });
   };
 
   return (
     <div style={{
-      display: "flex", width: "100vw", height: "100vh",
-      background: "var(--ground)", overflow: "hidden",
+      minHeight: "100vh", display: "flex", background: "var(--ink-0)",
+      color: "#fff", position: "relative", overflow: "hidden"
     }}>
-      {/* Left Minimal Hero Panel */}
+      {/* Subtle Background Radial Glow */}
       <div style={{
-        flex: "1", background: "var(--ink-0)",
-        display: "flex", flexDirection: "column", justifyContent: "space-between",
-        padding: "56px 64px", position: "relative", overflow: "hidden",
-      }}>
-        {/* Subtle Ambient Radial Accent */}
-        <div style={{
-          position: "absolute", top: "-25%", right: "-25%", width: "600px", height: "600px",
-          borderRadius: "50%", background: "radial-gradient(circle, rgba(200,134,13,0.12) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }} />
+        position: "absolute", top: "-15%", left: "-10%", width: "600px", height: "600px",
+        borderRadius: "50%", background: "radial-gradient(circle, rgba(200,134,13,0.12) 0%, transparent 70%)",
+        pointerEvents: "none",
+      }} />
 
-        {/* Brand Mark */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12, position: "relative", zIndex: 2 }}>
+      {/* Left Minimal Hero Container */}
+      <div style={{
+        flex: 1, padding: "56px 64px", display: "flex", flexDirection: "column",
+        justifyContent: "space-between", position: "relative", zIndex: 2
+      }}>
+        {/* Wordmark */}
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <div style={{
-            width: 36, height: 36, borderRadius: 8,
+            width: 38, height: 38, borderRadius: 10,
             background: "linear-gradient(135deg, var(--am-5), var(--am-6))",
             display: "flex", alignItems: "center", justifyContent: "center",
             fontWeight: 700, fontSize: 18, color: "#fff",
@@ -118,45 +117,48 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
           }}>P</div>
           <div>
             <div style={{ fontFamily: "var(--f-disp)", fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>PlateletIQ</div>
-            <div style={{ fontSize: 10.5, color: "var(--am-4)", fontWeight: 600, letterSpacing: ".1em", textTransform: "uppercase" }}>Clinical Inventory System</div>
+            <div style={{ fontSize: 10, color: "var(--am-4)", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>Hospital Control System</div>
           </div>
         </div>
 
         {/* Minimal Hero Copy */}
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 460, margin: "auto 0" }}>
+        <div style={{ maxWidth: 460, margin: "auto 0" }}>
           <h1 style={{
-            fontFamily: "var(--f-disp)", fontSize: 36, fontWeight: 700,
-            color: "#fff", lineHeight: 1.2, letterSpacing: "-.02em", marginBottom: 16,
+            fontFamily: "var(--f-disp)", fontSize: 38, fontWeight: 700,
+            color: "#fff", lineHeight: 1.18, letterSpacing: "-.02em", marginBottom: 14,
           }}>
-            Intelligent Blood Bank Inventory & Surge System.
+            Precision Inventory & Demand Intelligence.
           </h1>
+
           <p style={{
-            fontSize: 14.5, color: "rgba(255,255,255,0.6)", lineHeight: "22px",
-            fontFamily: "var(--f-body)", marginBottom: 40,
+            fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: "22px",
+            fontFamily: "var(--f-body)", marginBottom: 32,
           }}>
-            Real-time platelet demand forecasting, wastage reduction, and NABH compliance management.
+            Clinical decision support for hospital blood banks & transfusion committees.
           </p>
 
-          {/* Minimal 3 Stat Callouts */}
-          <div style={{ display: "flex", gap: 40, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
+          {/* 3 Sleek Pill Metrics */}
+          <div style={{ display: "flex", gap: 24, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
             <div>
               <div style={{ fontSize: 24, fontWeight: 700, color: "var(--am-4)", fontFamily: "var(--f-disp)" }}>3.8%</div>
               <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Wastage Rate</div>
             </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", fontFamily: "var(--f-disp)" }}>99.4%</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Surge Coverage</div>
+            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: 24 }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", fontFamily: "var(--f-disp)" }}>4,018</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Data Days</div>
             </div>
-            <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "var(--st-6)", fontFamily: "var(--f-disp)" }}>NABH</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Compliant</div>
+            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: 24 }}>
+              <div style={{ fontSize: 24, fontWeight: 700, color: "var(--st-6)", fontFamily: "var(--f-disp)" }}>99.4%</div>
+              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Issue Rate</div>
             </div>
           </div>
         </div>
 
-        {/* Minimal Security Footer */}
-        <div style={{ fontSize: 11.5, color: "rgba(255,255,255,0.35)", position: "relative", zIndex: 2 }}>
-          🔒 256-Bit TLS Encrypted · Hospital Control Panel
+        {/* Clean Badges */}
+        <div style={{ display: "flex", gap: 18, fontSize: 11.5, color: "rgba(255,255,255,0.4)" }}>
+          <span>✓ NABH Compliant</span>
+          <span>🔒 256-Bit TLS</span>
+          <span>🩺 WHO Guidelines</span>
         </div>
       </div>
 
@@ -164,23 +166,22 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
       <div style={{
         width: 440, background: "var(--surface)",
         display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "48px 44px", overflowY: "auto",
-        borderLeft: "1px solid var(--border)",
+        padding: "48px 40px", borderLeft: "1px solid var(--border)",
       }}>
-        <div style={{ maxWidth: 350, margin: "0 auto", width: "100%" }}>
-          <div style={{ marginBottom: 32 }}>
+        <div style={{ maxWidth: 360, margin: "0 auto", width: "100%" }}>
+          <div style={{ marginBottom: 28 }}>
             <h2 style={{
-              fontFamily: "var(--f-disp)", fontSize: 26, fontWeight: 700,
-              color: "var(--ink-0)", margin: "0 0 6px", letterSpacing: "-.01em",
+              fontFamily: "var(--f-disp)", fontSize: 24, fontWeight: 700,
+              color: "var(--ink-0)", margin: 0, letterSpacing: "-.01em",
             }}>Sign In</h2>
-            <p style={{ fontSize: 13, color: "var(--ink-2)", fontFamily: "var(--f-body)" }}>
-              Select facility and enter credentials to continue.
+            <p style={{ fontSize: 12.5, color: "var(--ink-2)", fontFamily: "var(--f-body)", marginTop: 4 }}>
+              Select facility & role to access your portal.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
                 Facility
               </label>
               <select
@@ -194,11 +195,12 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
                 <option value="Govt. General Hospital, Chennai">Govt. General Hospital, Chennai</option>
                 <option value="Apollo Hospitals, Greams Road">Apollo Hospitals, Greams Road</option>
                 <option value="Christian Medical College, Vellore">Christian Medical College, Vellore</option>
+                <option value="RWTH Aachen University Hospital">RWTH Aachen University Hospital</option>
               </select>
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
                 Role
               </label>
               <select
@@ -216,8 +218,8 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
-                Operator ID / Email
+              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
+                Email / ID
               </label>
               <input
                 type="email" value={username} onChange={e => setUsername(e.target.value)}
@@ -225,14 +227,14 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
                 style={{
                   width: "100%", padding: "10px 12px",
                   background: "var(--surface-dim)", border: "1px solid var(--border)",
-                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 13,
+                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
                   color: "var(--ink-0)", outline: "none",
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "var(--ink-1)", marginBottom: 6 }}>
+              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
                 Password
               </label>
               <input
@@ -241,7 +243,7 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
                 style={{
                   width: "100%", padding: "10px 12px",
                   background: "var(--surface-dim)", border: "1px solid var(--border)",
-                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 13,
+                  borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
                   color: "var(--ink-0)", outline: "none",
                 }}
               />
@@ -254,7 +256,7 @@ function LoginPage({ onLogin }: { onLogin: (u: { name: string; role: string; fac
                 background: "var(--am-6)", border: "none", borderRadius: 8,
                 fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700,
                 color: "#fff", cursor: "pointer", boxShadow: "0 4px 12px rgba(200,134,13,0.25)",
-                transition: "all 120ms ease", marginTop: 8,
+                transition: "all 120ms ease", marginTop: 6,
               }}>
               Sign In →
             </button>
