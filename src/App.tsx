@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { UnitDetail, ShelfBand, ForecastDay, Requisition, PlannerRow } from "./types";
+import { UnitDetail, ShelfBand, ForecastDay, PlannerRow } from "./types";
 import {
   fetchStockShelfLife, fetch7DayForecast, fetchRecommendation,
-  fetchRequisitions, fetchCollectionPlan, issueRequisition,
-  confirmRecommendation, uploadDailyDemandCSV, registerNewUnit,
+  fetchCollectionPlan, confirmRecommendation, uploadDailyDemandCSV, registerNewUnit,
 } from "./services/api";
 import {
   Area, AreaChart, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -809,123 +808,6 @@ function PlannerPage() {
     </div>
   );
 }
-
-// ─── Requisitions Page ────────────────────────────────────────────────────────
-
-function ReqsPage() {
-  const [reqs, setReqs] = useState<Requisition[]>([]);
-  const [done, setDone] = useState<Record<string, string>>({});
-
-  useEffect(() => {
-    fetchRequisitions().then(data => setReqs(data));
-  }, []);
-
-  const handleIssue = async (reqId: string) => {
-    setDone(s => ({ ...s, [reqId]: "Issued by RK, 09:14" }));
-    await issueRequisition('ggh-chennai', reqId, 'Issued by RK');
-  };
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 4 }}>
-        {T.eyebrow("Requisitions Review (WHO 2009 Guidelines Concordance)")}
-        <span style={{
-          display: "inline-flex", alignItems: "center", gap: 4,
-          padding: "3px 9px", borderRadius: 99,
-          background: "var(--wa-1)", border: "1px solid rgba(181,115,10,.25)",
-          fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
-          letterSpacing: ".06em", textTransform: "uppercase",
-          color: "var(--wa-7)",
-        }}>⚠ 2 need review</span>
-      </div>
-
-      {reqs.map(r => (
-        <div key={r.id} style={{
-          background: "var(--surface)",
-          border: r.status === "review" ? "1px solid rgba(181,115,10,.25)" : "1px solid var(--border)",
-          borderLeft: `4px solid ${r.status === "review" ? "var(--wa-6)" : "var(--st-6)"}`,
-          borderRadius: 12, boxShadow: "var(--sh-card)",
-          padding: "18px 22px",
-        }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-            <span style={{
-              fontFamily: "var(--f-disp)", fontSize: 10.5, fontWeight: 700,
-              letterSpacing: ".12em", textTransform: "uppercase",
-              color: r.status === "review" ? "var(--wa-7)" : "var(--st-7)",
-            }}>
-              {r.status === "review" ? "⚠ Review" : "✓ Concordant"}
-            </span>
-            <span style={{ fontSize: 13, color: "var(--ink-3)", fontFamily: "var(--f-body)" }}>
-              {r.ward} · Req #{r.id} · {r.time}
-            </span>
-          </div>
-
-          <div style={{ fontSize: 14, color: "var(--ink-1)", marginBottom: 5, fontFamily: "var(--f-body)" }}>
-            <span className="data" style={{ fontWeight: 600, color: "var(--ink-0)" }}>{r.units}</span> units ·
-            platelet count <span className="data" style={{ fontWeight: 600, color: "var(--ink-0)" }}>{r.plt}</span> ×10⁹/L
-          </div>
-          <div style={{ fontSize: 13, color: "var(--ink-3)", fontFamily: "var(--f-body)", marginBottom: r.guideline ? 14 : 0 }}>
-            {r.note}
-          </div>
-
-          {r.guideline && (
-            <div style={{
-              marginBottom: 16, padding: "12px 15px",
-              background: "var(--wa-1)", border: "1px solid rgba(181,115,10,.2)",
-              borderRadius: 8,
-              fontSize: 13, color: "var(--ink-1)", lineHeight: "20px",
-              fontFamily: "var(--f-body)",
-            }}>
-              {r.guideline}
-              <div style={{ marginTop: 8 }}>
-                <a href="#" style={{ fontSize: 12, color: "var(--in-6)", textDecoration: "underline", fontWeight: 500 }}>
-                  Source: {r.source} ↗
-                </a>
-              </div>
-            </div>
-          )}
-
-          {r.status === "review" && (
-            <div style={{ display: "flex", gap: 8 }}>
-              {done[r.id] ? (
-                <div style={{
-                  fontSize: 13, color: "var(--st-7)", padding: "8px 15px",
-                  background: "var(--st-1)", borderRadius: 7, fontFamily: "var(--f-body)", fontWeight: 500,
-                }}>✓ {done[r.id]}</div>
-              ) : (
-                <>
-                  <button onClick={() => handleIssue(r.id)} style={btn.primary}>
-                    Issue anyway
-                  </button>
-                  <button onClick={() => setDone(s => ({ ...s, [r.id]: "Sent for review" }))} style={btn.sec}>
-                    Send for review
-                  </button>
-                  <button style={btn.sec}>Contact requester</button>
-                </>
-              )}
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-const btn = {
-  primary: {
-    padding: "9px 18px",
-    background: "var(--cr-6)", border: "none", borderRadius: 7,
-    fontFamily: "var(--f-body)", fontSize: 13.5, fontWeight: 600,
-    color: "#fff", cursor: "pointer",
-  } as React.CSSProperties,
-  sec: {
-    padding: "9px 16px",
-    background: "var(--sunken)", border: "1px solid var(--border)",
-    borderRadius: 7,
-    fontFamily: "var(--f-body)", fontSize: 13.5, fontWeight: 500,
-    color: "var(--ink-1)", cursor: "pointer",
-  } as React.CSSProperties,
-};
 
 // ─── Data Entry Page ──────────────────────────────────────────────────────────
 
