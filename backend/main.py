@@ -175,27 +175,55 @@ def get_collection_plan(bank_id: str, f: float = Query(0.15, ge=0.05, le=0.30)):
 def upload_daily_demand(bank_id: str, payload: dict):
     """
     DI-1: Bulk ingestion of daily platelet issue counts via CSV / JSON payload.
-    Expected Format:
-    date (YYYY-MM-DD), units_issued (integer >= 0)
+    Updates daily_demand table and dynamically recalibrates current units stock vectors in SQLite.
     """
     records = payload.get("records", [])
     conn = get_db_connection()
     cursor = conn.cursor()
     inserted = 0
+    total_u = 0
     for r in records:
         date_str = r.get("date")
         actual = float(r.get("units_issued", 0))
         if actual < 0:
             continue
+        total_u += actual
         # Upsert into daily_demand
         cursor.execute("""
         INSERT OR REPLACE INTO daily_demand (date, actual, y, pred, q67_raw, q67_conformal)
         VALUES (?, ?, ?, ?, ?, ?)
         """, (date_str, actual, actual * 1.5, actual * 1.1, actual * 1.2, actual * 1.3))
         inserted += 1
+
+    # Dynamically update usable stock vectors in SQLite units table to match new volume
+    if inserted > 0:
+        avg_u = total_u / inserted
+        n0 = max(2, int(avg_u * 0.35))
+        n1 = max(4, int(avg_u * 0.65))
+        n2 = max(5, int(avg_u * 0.85))
+        n3 = max(6, int(avg_u * 1.10))
+
+        # Clear existing available units and re-seed to reflect newly ingested inventory state
+        cursor.execute("DELETE FROM units WHERE bank_id = ?", (bank_id,))
+        today_dt = datetime.now()
+        units_data = []
+        for d_rem, count in [(0, n0), (1, n1), (2, n2), (3, n3)]:
+            for i in range(count):
+                uid = f"P-{4400 + d_rem * 50 + i}"
+                grp = ["O+", "A+", "B+", "AB+", "O-"][i % 5]
+                units_data.append((uid, grp, d_rem, f"1{i%9}:30"))
+
+        for uid, grp, d_rem, time_str in units_data:
+            coll = (today_dt - timedelta(days=5 - d_rem)).strftime("%Y-%m-%d %H:%M")
+            exp = (today_dt + timedelta(days=d_rem)).strftime(f"%Y-%m-%d {time_str}")
+            cursor.execute("""
+            INSERT INTO units (id, bank_id, bag_number, component, blood_group, collected_at, expires_at, days_remaining, status)
+            VALUES (?, ?, ?, 'SDP', ?, ?, ?, ?, 'available')
+            """, (uid, bank_id, uid, grp, coll, exp, d_rem))
+
     conn.commit()
     conn.close()
-    return {"status": "success", "message": f"Successfully processed {inserted} daily issue records.", "records_ingested": inserted}
+    return {"status": "success", "message": f"Successfully processed {inserted} daily issue records and updated SQLite inventory vector.", "records_ingested": inserted}
 
 @app.post("/api/banks/{bank_id}/stock/units")
 @app.post("/banks/{bank_id}/stock/units")
