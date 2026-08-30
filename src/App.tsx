@@ -74,14 +74,13 @@ const T = {
   ),
 };
 
-// ─── Impressive Professional Login Page ───────────────────────────────────────
+// ─── Devfolio-Style Professional Minimalist Login Page ────────────────────────
 
 function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; facility: string }) => void }) {
   const [facility, setFacility] = useState("Govt. General Hospital, Chennai");
   const [role, setRole] = useState("Shift Technician");
   const [username, setUsername] = useState("rkumar@ggh.gov.in");
   const [password, setPassword] = useState("••••••••••••");
-  const [remember, setRemember] = useState(true);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,106 +89,62 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
 
   return (
     <div style={{
-      minHeight: "100vh", display: "flex", background: "var(--ink-0)",
-      color: "#fff", position: "relative", overflow: "hidden"
+      minHeight: "100vh", width: "100vw", display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center", background: "#0D1117",
+      color: "#fff", position: "relative", overflow: "hidden", padding: "24px",
     }}>
-      {/* Subtle Background Radial Glow */}
+      {/* Devfolio Subtle Radial Glow */}
       <div style={{
-        position: "absolute", top: "-15%", left: "-10%", width: "600px", height: "600px",
-        borderRadius: "50%", background: "radial-gradient(circle, rgba(200,134,13,0.12) 0%, transparent 70%)",
+        position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+        width: "600px", height: "600px", borderRadius: "50%",
+        background: "radial-gradient(circle, rgba(200,134,13,0.08) 0%, transparent 70%)",
         pointerEvents: "none",
       }} />
 
-      {/* Left Minimal Hero Container */}
+      {/* Devfolio-Style Centered Container */}
       <div style={{
-        flex: 1, padding: "56px 64px", display: "flex", flexDirection: "column",
-        justifyContent: "space-between", position: "relative", zIndex: 2
+        width: "100%", maxWidth: 420, position: "relative", zIndex: 2,
+        display: "flex", flexDirection: "column", alignItems: "center"
       }}>
-        {/* Wordmark */}
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 38, height: 38, borderRadius: 10,
-            background: "linear-gradient(135deg, var(--am-5), var(--am-6))",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontWeight: 700, fontSize: 18, color: "#fff",
-            boxShadow: "0 4px 14px rgba(200,134,13,0.3)"
-          }}>P</div>
-          <div>
-            <div style={{ fontFamily: "var(--f-disp)", fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>PlateletIQ</div>
-            <div style={{ fontSize: 10, color: "var(--am-4)", fontWeight: 700, letterSpacing: ".1em", textTransform: "uppercase" }}>Hospital Control System</div>
-          </div>
+        {/* Handwriting Quote at Top */}
+        <div style={{
+          fontFamily: "var(--f-quote)", fontSize: 36, fontWeight: 700,
+          color: "var(--am-4)", textAlign: "center", marginBottom: 32,
+          lineHeight: 1.2, textShadow: "0 2px 10px rgba(200,134,13,0.2)"
+        }}>
+          “Every unit saved is a life sustained.”
         </div>
 
-        {/* Minimal Hero Copy */}
-        <div style={{ maxWidth: 460, margin: "auto 0" }}>
-          <h1 style={{
-            fontFamily: "var(--f-disp)", fontSize: 38, fontWeight: 700,
-            color: "#fff", lineHeight: 1.18, letterSpacing: "-.02em", marginBottom: 14,
-          }}>
-            Precision Inventory & Demand Intelligence.
-          </h1>
+        {/* Devfolio Login Card */}
+        <div style={{
+          width: "100%", background: "#161B22", border: "1px solid #30363D",
+          borderRadius: 14, padding: "36px 32px", boxShadow: "0 16px 40px rgba(0,0,0,0.4)"
+        }}>
+          {/* Header Branding */}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 28 }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: 8,
+              background: "linear-gradient(135deg, var(--am-5), var(--am-6))",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontWeight: 700, fontSize: 16, color: "#fff"
+            }}>P</div>
+            <span style={{ fontFamily: "var(--f-disp)", fontSize: 20, fontWeight: 700, color: "#fff", letterSpacing: "-.01em" }}>
+              PlateletIQ
+            </span>
+          </div>
 
-          <p style={{
-            fontSize: 14, color: "rgba(255,255,255,0.6)", lineHeight: "22px",
-            fontFamily: "var(--f-body)", marginBottom: 32,
-          }}>
-            Clinical decision support for hospital blood banks & transfusion committees.
-          </p>
-
-          {/* 3 Sleek Pill Metrics */}
-          <div style={{ display: "flex", gap: 24, borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 24 }}>
+          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 18 }}>
             <div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "var(--am-4)", fontFamily: "var(--f-disp)" }}>3.8%</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Wastage Rate</div>
-            </div>
-            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: 24 }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "#fff", fontFamily: "var(--f-disp)" }}>4,018</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Data Days</div>
-            </div>
-            <div style={{ borderLeft: "1px solid rgba(255,255,255,0.1)", paddingLeft: 24 }}>
-              <div style={{ fontSize: 24, fontWeight: 700, color: "var(--st-6)", fontFamily: "var(--f-disp)" }}>99.4%</div>
-              <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>Issue Rate</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Clean Badges */}
-        <div style={{ display: "flex", gap: 18, fontSize: 11.5, color: "rgba(255,255,255,0.4)" }}>
-          <span>✓ NABH Compliant</span>
-          <span>🔒 256-Bit TLS</span>
-          <span>🩺 WHO Guidelines</span>
-        </div>
-      </div>
-
-      {/* Right Minimal Sign In Form */}
-      <div style={{
-        width: 440, background: "var(--surface)",
-        display: "flex", flexDirection: "column", justifyContent: "center",
-        padding: "48px 40px", borderLeft: "1px solid var(--border)",
-      }}>
-        <div style={{ maxWidth: 360, margin: "0 auto", width: "100%" }}>
-          <div style={{ marginBottom: 28 }}>
-            <h2 style={{
-              fontFamily: "var(--f-disp)", fontSize: 24, fontWeight: 700,
-              color: "var(--ink-0)", margin: 0, letterSpacing: "-.01em",
-            }}>Sign In</h2>
-            <p style={{ fontSize: 12.5, color: "var(--ink-2)", fontFamily: "var(--f-body)", marginTop: 4 }}>
-              Select facility & role to access your portal.
-            </p>
-          </div>
-
-          <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div>
-              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
                 Facility
               </label>
               <select
                 value={facility} onChange={e => setFacility(e.target.value)}
                 style={{
                   width: "100%", padding: "10px 12px",
-                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  background: "#0D1117", border: "1px solid #30363D",
                   borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13,
-                  color: "var(--ink-0)", outline: "none",
+                  color: "#C9D1D9", outline: "none"
                 }}>
                 <option value="Govt. General Hospital, Chennai">Govt. General Hospital, Chennai</option>
                 <option value="Apollo Hospitals, Greams Road">Apollo Hospitals, Greams Road</option>
@@ -199,16 +154,16 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
                 Role
               </label>
               <select
                 value={role} onChange={e => setRole(e.target.value)}
                 style={{
                   width: "100%", padding: "10px 12px",
-                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  background: "#0D1117", border: "1px solid #30363D",
                   borderRadius: 8, fontFamily: "var(--f-body)", fontSize: 13,
-                  color: "var(--ink-0)", outline: "none",
+                  color: "#C9D1D9", outline: "none"
                 }}>
                 <option value="Shift Technician">Shift Technician</option>
                 <option value="Blood Bank Officer">Blood Bank Officer</option>
@@ -217,23 +172,23 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
-                Email / ID
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
+                Operator ID / Email
               </label>
               <input
                 type="email" value={username} onChange={e => setUsername(e.target.value)}
                 required
                 style={{
                   width: "100%", padding: "10px 12px",
-                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  background: "#0D1117", border: "1px solid #30363D",
                   borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
-                  color: "var(--ink-0)", outline: "none",
+                  color: "#C9D1D9", outline: "none"
                 }}
               />
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 11.5, fontWeight: 600, color: "var(--ink-1)", marginBottom: 5 }}>
+              <label style={{ display: "block", fontSize: 12, fontWeight: 600, color: "#8B949E", marginBottom: 6 }}>
                 Password
               </label>
               <input
@@ -241,9 +196,9 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
                 required
                 style={{
                   width: "100%", padding: "10px 12px",
-                  background: "var(--surface-dim)", border: "1px solid var(--border)",
+                  background: "#0D1117", border: "1px solid #30363D",
                   borderRadius: 8, fontFamily: "var(--f-data)", fontSize: 12.5,
-                  color: "var(--ink-0)", outline: "none",
+                  color: "#C9D1D9", outline: "none"
                 }}
               />
             </div>
@@ -254,8 +209,8 @@ function LoginPage({ onLogin }: { onLogin: (user: { name: string; role: string; 
                 width: "100%", padding: "12px",
                 background: "var(--am-6)", border: "none", borderRadius: 8,
                 fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700,
-                color: "#fff", cursor: "pointer", boxShadow: "0 4px 12px rgba(200,134,13,0.25)",
-                transition: "all 120ms ease", marginTop: 6,
+                color: "#fff", cursor: "pointer", boxShadow: "0 4px 14px rgba(200,134,13,0.3)",
+                transition: "all 120ms ease", marginTop: 8
               }}>
               Sign In →
             </button>

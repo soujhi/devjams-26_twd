@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Playfair+Display:ital,wght@1,600&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
 
 html, body, #root { height: 100%; width: 100%; overflow: hidden; }
@@ -55,6 +55,7 @@ html, body, #root { height: 100%; width: 100%; overflow: hidden; }
   --f-disp: 'IBM Plex Sans Condensed', 'Arial Narrow', sans-serif;
   --f-body: 'IBM Plex Sans', system-ui, sans-serif;
   --f-data: 'IBM Plex Mono', ui-monospace, monospace;
+  --f-quote: 'Caveat', cursive, serif;
 
   /* ── Motion ── */
   --ease:   cubic-bezier(.2,.68,.28,1);
