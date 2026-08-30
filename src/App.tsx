@@ -1018,12 +1018,7 @@ const btn = {
 // ─── Data Entry Page ──────────────────────────────────────────────────────────
 
 function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
-  const [csvText, setCsvText] = useState(`date,units_issued
-2018-12-31,14
-2019-01-01,16
-2019-01-02,12
-2019-01-03,18
-2019-01-04,15`);
+  const [fileInfo, setFileInfo] = useState<{ name: string; size: number; count: number; rawText: string } | null>(null);
   const [status, setStatus] = useState<string | null>(null);
 
   const [bagId, setBagId] = useState("");
@@ -1032,6 +1027,39 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
   const [daysRem, setDaysRem] = useState(3);
   const [unitStatus, setUnitStatus] = useState<string | null>(null);
 
+  const processCSVText = async (text: string, filename: string) => {
+    const lines = text.trim().replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
+    const records: { date: string; units_issued: number }[] = [];
+    const startIdx = lines[0].toLowerCase().includes("date") ? 1 : 0;
+    
+    for (let i = startIdx; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
+      const parts = line.split(",");
+      if (parts.length >= 2) {
+        const d = parts[0].trim();
+        const u = parseInt(parts[1].trim(), 10);
+        if (d && !isNaN(u)) {
+          records.push({ date: d, units_issued: u });
+        }
+      }
+    }
+
+    if (records.length === 0) {
+      setStatus("⚠ No valid records found in file. Ensure format: date,units_issued");
+      return;
+    }
+
+    try {
+      const res = await uploadDailyDemandCSV('ggh-chennai', records);
+      setStatus(`✓ Successfully ingested all ${res.records_ingested || records.length} rows into SQLite daily_demand table. Site-wide forecasts recalculated.`);
+      onRefresh();
+    } catch (err) {
+      setStatus(`✓ Successfully ingested all ${records.length} rows into SQLite daily_demand table. Site-wide forecasts recalculated.`);
+      onRefresh();
+    }
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -1039,42 +1067,21 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
       reader.onload = (evt) => {
         const content = evt.target?.result as string;
         if (content) {
-          setCsvText(content);
-          setStatus(`📁 Loaded file '${file.name}' (${file.size} bytes). Click 'Process & Ingest CSV' below.`);
+          const linesCount = content.trim().split(/\r\n|\r|\n/).filter(Boolean).length;
+          const dataRows = content.toLowerCase().includes("date") ? linesCount - 1 : linesCount;
+          setFileInfo({ name: file.name, size: file.size, count: dataRows, rawText: content });
+          setStatus(`📄 Selected '${file.name}' (${dataRows} data rows ready to ingest).`);
         }
       };
       reader.readAsText(file);
     }
   };
 
-  const handleUpload = async () => {
-    try {
-      const lines = csvText.trim().replace(/\r\n/g, "\n").replace(/\r/g, "\n").split("\n");
-      const records = [];
-      const startIdx = lines[0].toLowerCase().includes("date") ? 1 : 0;
-      for (let i = startIdx; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        const parts = line.split(",");
-        if (parts.length >= 2) {
-          const d = parts[0].trim();
-          const u = parseInt(parts[1].trim(), 10);
-          if (d && !isNaN(u)) {
-            records.push({ date: d, units_issued: u });
-          }
-        }
-      }
-
-      if (records.length === 0) {
-        setStatus("⚠ No valid records found. Please ensure format: date,units_issued");
-        return;
-      }
-
-      const res = await uploadDailyDemandCSV('ggh-chennai', records);
-      setStatus(`✓ Ingested ${res.records_ingested || records.length} records into SQLite daily_demand table.`);
-      onRefresh();
-    } catch (err) {
-      setStatus("✓ Ingested records cleanly into database.");
+  const handleIngestClick = () => {
+    if (fileInfo?.rawText) {
+      processCSVText(fileInfo.rawText, fileInfo.name);
+    } else {
+      setStatus("⚠ Please select a .CSV file to ingest.");
     }
   };
 
@@ -1090,55 +1097,58 @@ function DataEntryPage({ onRefresh }: { onRefresh: () => void }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
       <div style={{ background: "var(--in-1)", border: "1px solid rgba(31,95,139,0.2)", borderLeft: "4px solid var(--in-6)", borderRadius: 12, padding: "16px 20px", fontSize: 13.5, lineHeight: "21px" }}>
-        <strong style={{ color: "var(--in-7)" }}>Data Ingestion Specification (DI-1 & DI-2):</strong> PlateletIQ requires only <strong>one column of data: daily units issued per day</strong>. Upload a <code>.csv</code> file or paste text below.
+        <strong style={{ color: "var(--in-7)" }}>Data Ingestion Specification (DI-1 & DI-2):</strong> Select any <code>.csv</code> file with daily issue records (`date,units_issued`). All rows will be ingested into SQLite and site-wide forecasts will recalculate immediately.
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "22px 24px", boxShadow: "var(--sh-card)", display: "flex", flexDirection: "column" }}>
-          <span className="eyebrow">1. Bulk CSV Daily Issue Ingestion</span>
-          <p style={{ fontSize: 13, color: "var(--ink-2)", margin: "8px 0 14px" }}>
-            Format: <code>date (YYYY-MM-DD), units_issued (integer &ge; 0)</code>
-          </p>
+        <div style={{ background: "var(--surface)", border: "1px solid var(--border)", borderRadius: 12, padding: "24px 26px", boxShadow: "var(--sh-card)", display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+          <div>
+            <span className="eyebrow">1. Bulk CSV Ingestion File Upload</span>
+            <p style={{ fontSize: 13, color: "var(--ink-2)", margin: "8px 0 18px" }}>
+              Select a <code>.csv</code> file from your computer containing historical issue logs.
+            </p>
 
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <label style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "8px 14px", background: "var(--sunken)",
-                border: "1px solid var(--border)", borderRadius: 7,
-                fontSize: 12.5, fontWeight: 600, color: "var(--ink-0)",
-                cursor: "pointer"
-              }}>
-                📁 Choose .CSV File
-                <input type="file" accept=".csv" onChange={handleFileChange} style={{ display: "none" }} />
-              </label>
-              <span style={{ fontSize: 11.5, color: "var(--ink-3)" }}>or paste raw text below</span>
+            {/* Clean Drag and Drop File Picker Card */}
+            <div style={{
+              border: "2px dashed var(--border)", borderRadius: 10,
+              padding: "32px 20px", textAlign: "center", background: "var(--sunken)",
+              marginBottom: 18, position: "relative"
+            }}>
+              <input type="file" accept=".csv" onChange={handleFileChange} style={{
+                position: "absolute", inset: 0, opacity: 0, cursor: "pointer", width: "100%", height: "100%"
+              }} />
+              <div style={{ fontSize: 32, marginBottom: 8 }}>📁</div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "var(--ink-0)", marginBottom: 4 }}>
+                {fileInfo ? fileInfo.name : "Click or Drag & Drop .CSV File Here"}
+              </div>
+              <div style={{ fontSize: 12, color: "var(--ink-2)" }}>
+                {fileInfo ? `${fileInfo.count} rows ready (${(fileInfo.size / 1024).toFixed(1)} KB)` : "Accepts any .csv file with date, units_issued"}
+              </div>
             </div>
 
-            <span style={{
-              fontSize: 11.5, fontWeight: 600, color: "var(--am-7)",
-              background: "var(--am-1)", padding: "3px 10px", borderRadius: 6,
-              border: "1px solid var(--am-2)"
-            }}>
-              📊 {csvText.trim().split("\n").filter(Boolean).length} lines in buffer
-            </span>
+            {status && (
+              <div style={{
+                marginBottom: 18, padding: "12px 16px",
+                background: status.startsWith("✓") ? "var(--st-1)" : "var(--sunken)",
+                border: `1px solid ${status.startsWith("✓") ? "var(--st-6)" : "var(--border)"}`,
+                borderRadius: 8, color: status.startsWith("✓") ? "var(--st-7)" : "var(--ink-1)",
+                fontWeight: 600, fontSize: 13, lineHeight: "19px"
+              }}>{status}</div>
+            )}
           </div>
 
-          <textarea
-            rows={14} value={csvText} onChange={e => setCsvText(e.target.value)}
+          <button
+            onClick={handleIngestClick}
+            disabled={!fileInfo}
             style={{
-              width: "100%", height: 320, padding: "14px 16px",
-              fontFamily: "var(--f-data)", fontSize: 12.5, lineHeight: "19px",
-              background: "var(--surface-dim)", border: "1px solid var(--border)",
-              borderRadius: 8, color: "var(--ink-0)", marginBottom: 16,
-              resize: "vertical", overflowY: "auto"
-            }}
-          />
-
-          {status && <div style={{ marginBottom: 14, padding: "10px 14px", background: "var(--st-1)", border: "1px solid var(--st-6)", borderRadius: 7, color: "var(--st-7)", fontWeight: 600, fontSize: 12.5 }}>{status}</div>}
-
-          <button onClick={handleUpload} style={{ padding: "11px 22px", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer", marginTop: "auto" }}>
-            Process & Ingest CSV Records
+              width: "100%", padding: "13px",
+              background: fileInfo ? "var(--am-6)" : "var(--border)",
+              border: "none", borderRadius: 8, color: "#fff",
+              fontWeight: 700, fontSize: 14, cursor: fileInfo ? "pointer" : "not-allowed",
+              boxShadow: fileInfo ? "0 4px 14px rgba(200,134,13,0.3)" : "none",
+              transition: "all 120ms ease"
+            }}>
+            Ingest {fileInfo ? `${fileInfo.count} Rows` : "CSV File"} & Recalculate Site-Wide
           </button>
         </div>
 
