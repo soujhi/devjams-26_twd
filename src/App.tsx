@@ -784,95 +784,147 @@ function PlannerPage() {
   const coll = Math.round(2320 * (1 + (f - 0.15) * 0.45));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {/* Plain-English Explanation Banner */}
       <div style={{
-        background: "var(--wa-1)",
-        border: "1px solid rgba(181,115,10,.2)",
-        borderLeft: "4px solid var(--wa-6)",
-        borderRadius: 12, padding: "12px 18px",
-        fontSize: 13.5, lineHeight: "20px", color: "var(--ink-1)",
-        fontFamily: "var(--f-body)",
+        background: "var(--surface)", border: "1px solid var(--border)",
+        borderRadius: 12, boxShadow: "var(--sh-card)", padding: "20px 24px",
+        display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 20, alignItems: "center",
       }}>
-        <strong style={{ color: "var(--wa-7)" }}>Data limitation:</strong>{" "}
-        Seasonal coefficients are fitted on Sri Lankan weekly data. The lag structure transfers; the seasonal peak does not — Colombo peaks July, Chennai peaks October–December.
+        <div>
+          <div className="eyebrow" style={{ color: "var(--am-7)", marginBottom: 6 }}>HOW DENGUE SURGE PLANNING WORKS</div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, color: "var(--ink-0)", fontFamily: "var(--f-disp)", margin: "0 0 8px" }}>
+            Seasonal Donation Camp Scheduling
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--ink-1)", lineHeight: "20px", fontFamily: "var(--f-body)" }}>
+            Platelets expire in 5 days. During dengue outbreaks, hospital transfusion requests spike dramatically.
+            The **Dengue Share ($f = 0.15$)** represents the share of hospital demand caused by dengue cases (15%).
+            We multiply seasonal dengue incidence by $f$ to calculate the <strong>Surge Multiplier</strong> for each month so camp organizers can book mobile donor vans ahead of time.
+          </p>
+        </div>
+
+        {/* Interactive Parameter Dial */}
+        <div style={{
+          padding: "16px 18px", background: "var(--sunken)",
+          border: "1px solid var(--border)", borderRadius: 10,
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--ink-0)", fontFamily: "var(--f-body)" }}>
+              Dengue Share Parameter ($f$)
+            </span>
+            <span className="data" style={{ fontSize: 17, color: "var(--am-7)", fontWeight: 700 }}>
+              f = {(f * 100).toFixed(0)}%
+            </span>
+          </div>
+
+          <input type="range" min={5} max={30} value={Math.round(f * 100)}
+            onChange={e => setF(parseInt(e.target.value) / 100)}
+            style={{ width: "100%", accentColor: "var(--am-6)", cursor: "pointer" }} />
+
+          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10.5, color: "var(--ink-3)", marginTop: 4 }}>
+            <span>5% (Low Outbreak)</span>
+            <span>15% (Default)</span>
+            <span>30% (Severe Outbreak)</span>
+          </div>
+
+          <div style={{ marginTop: 10, fontSize: 12, color: "var(--ink-2)", fontFamily: "var(--f-body)" }}>
+            Total 6-month target: <strong style={{ color: "var(--ink-0)" }}>{coll.toLocaleString()} units</strong> (~3% change across range).
+            Adjusting $f$ shifts <em>when</em> camps are held, not <em>total volume</em>.
+          </div>
+        </div>
       </div>
 
+      {/* Main Camp Schedule Table */}
       <div style={{
         background: "var(--surface)", border: "1px solid var(--border)",
         borderRadius: 12, boxShadow: "var(--sh-card)", padding: "22px 24px",
       }}>
-        {T.eyebrow("Six-month collection plan (Live Dengue Surge Calculation)")}
-
-        <div style={{
-          margin: "18px 0 22px", padding: "16px 18px",
-          background: "var(--surface-dim)", border: "1px solid var(--border-faint)",
-          borderRadius: 8,
-        }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 10 }}>
-            <span style={{ fontSize: 13.5, color: "var(--ink-1)", fontFamily: "var(--f-body)", fontWeight: 500 }}>
-              Dengue-attributable share of demand (f)
-            </span>
-            <span className="data" style={{ fontSize: 16, color: "var(--in-6)", fontWeight: 600, letterSpacing: "-.01em" }}>
-              f = {f.toFixed(2)}
-            </span>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 16 }}>
+          <div>
+            {T.eyebrow("RECOMMENDED MOBILE DONOR CAMP SCHEDULE")}
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: "var(--ink-0)", fontFamily: "var(--f-disp)", marginTop: 4 }}>
+              Target Collection & Recommended Camp Date Windows
+            </h3>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--f-body)" }}>0.05</span>
-            <input type="range" min={5} max={30} value={Math.round(f * 100)}
-              onChange={e => setF(parseInt(e.target.value) / 100)}
-              style={{ flex: 1, accentColor: "var(--am-6)" }} />
-            <span style={{ fontSize: 11, color: "var(--ink-3)", fontFamily: "var(--f-body)" }}>0.30</span>
-          </div>
-          <div style={{ marginTop: 10, fontSize: 13.5, color: "var(--in-7)", fontFamily: "var(--f-body)" }}>
-            Six-month collection:{" "}
-            <span className="data" style={{ fontSize: 15, fontWeight: 600, color: "var(--in-7)" }}>{coll.toLocaleString()}</span>
-            {" "}units (range 2,290–2,365)
-          </div>
+          <span style={{ fontSize: 11.5, color: "var(--st-6)", fontWeight: 600, background: "var(--st-1)", padding: "4px 10px", borderRadius: 6 }}>
+            ● Lead Time: Schedule Camps 14 Days Prior
+          </span>
         </div>
 
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
-              <tr>
-                {["Month", "Dengue index", "Surge", "Needed", "Collect", "Camps", "Action"].map(h => (
+              <tr style={{ background: "var(--sunken)" }}>
+                {["Month", "Dengue Index", "Surge Multiplier", "Baseline Needed", "Target Collection", "Camps Needed", "Recommended Camp Window", "Action"].map(h => (
                   <th key={h} style={{
-                    padding: "9px 14px",
-                    textAlign: h === "Month" || h === "Action" ? "left" : "right",
-                    fontSize: 10.5, fontWeight: 600, fontFamily: "var(--f-body)",
-                    color: "var(--ink-3)", letterSpacing: ".05em", textTransform: "uppercase",
+                    padding: "10px 14px",
+                    textAlign: h === "Month" || h === "Recommended Camp Window" || h === "Action" ? "left" : "right",
+                    fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
+                    color: "var(--ink-2)", letterSpacing: ".05em", textTransform: "uppercase",
                     borderBottom: "1px solid var(--border)",
                   }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {plan.map(r => (
-                <tr key={r.mo} style={{ borderBottom: "1px solid var(--border-faint)" }}>
-                  <td style={{ padding: "11px 14px", fontFamily: "var(--f-body)", fontSize: 13.5, fontWeight: 500, color: "var(--ink-1)" }}>{r.mo}</td>
-                  <td className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-0)" }}>{r.dengue.toFixed(2)}</td>
-                  <td className="data" style={{
-                    padding: "11px 14px", textAlign: "right", fontSize: 13.5, fontWeight: r.surge > 1.1 ? 600 : 400,
-                    color: r.surge > 1.1 ? "var(--cr-6)" : "var(--ink-0)",
-                  }}>{r.surge.toFixed(2)}×</td>
-                  {[r.needed, r.collect].map((v, j) => (
-                    <td key={j} className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-0)" }}>{v}</td>
-                  ))}
-                  <td className="data" style={{ padding: "11px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-0)" }}>{r.camps}</td>
-                  <td style={{ padding: "11px 14px" }}>
-                    <span style={{
-                      display: "inline-flex", alignItems: "center", gap: 4,
-                      padding: "3px 9px", borderRadius: 99,
-                      fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
-                      textTransform: "uppercase", letterSpacing: ".06em",
-                      background: r.dir === "up" ? "var(--wa-1)" : r.dir === "dn" ? "var(--st-1)" : "var(--sunken)",
-                      color: r.dir === "up" ? "var(--wa-7)" : r.dir === "dn" ? "var(--st-7)" : "var(--ink-2)",
+              {plan.map(r => {
+                const isPeak = r.surge > 1.1;
+                return (
+                  <tr key={r.mo} style={{
+                    background: isPeak ? "rgba(200,134,13,0.04)" : undefined,
+                    borderBottom: "1px solid var(--border-faint)",
+                  }}>
+                    <td style={{ padding: "12px 14px", fontFamily: "var(--f-body)", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>
+                      {r.mo}
+                    </td>
+                    <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 13.5, color: "var(--ink-1)" }}>
+                      {r.dengue.toFixed(2)}×
+                    </td>
+                    <td className="data" style={{
+                      padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: isPeak ? 700 : 500,
+                      color: isPeak ? "var(--cr-6)" : "var(--ink-0)",
                     }}>
-                      {r.dir === "up" ? "▲ Scale up" : r.dir === "dn" ? "▼ Scale down" : "■ Hold"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+                      {r.surge.toFixed(2)}×
+                    </td>
+                    {[r.needed, r.collect].map((v, j) => (
+                      <td key={j} className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: j === 1 ? 700 : 400, color: j === 1 ? "var(--am-7)" : "var(--ink-0)" }}>
+                        {v}
+                      </td>
+                    ))}
+                    <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 600, color: "var(--ink-0)" }}>
+                      {r.camps}
+                    </td>
+                    <td style={{ padding: "12px 14px", fontFamily: "var(--f-data)", fontSize: 13, fontWeight: 600, color: isPeak ? "var(--am-7)" : "var(--ink-0)" }}>
+                      📅 {r.camp_window || `${r.mo} 10 – ${r.mo} 18`}
+                    </td>
+                    <td style={{ padding: "12px 14px" }}>
+                      <span style={{
+                        display: "inline-flex", alignItems: "center", gap: 4,
+                        padding: "4px 10px", borderRadius: 6,
+                        fontSize: 10.5, fontWeight: 700, fontFamily: "var(--f-body)",
+                        textTransform: "uppercase", letterSpacing: ".06em",
+                        background: r.dir === "up" ? "var(--wa-1)" : r.dir === "dn" ? "var(--st-1)" : "var(--sunken)",
+                        color: r.dir === "up" ? "var(--wa-7)" : r.dir === "dn" ? "var(--st-7)" : "var(--ink-2)",
+                        border: `1px solid ${r.dir === "up" ? "rgba(181,115,10,0.3)" : "rgba(0,0,0,0.1)"}`
+                      }}>
+                        {r.dir === "up" ? "▲ Scale Up Camps" : r.dir === "dn" ? "▼ Reduce Camps" : "■ Hold Camps"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
+            <tfoot>
+              <tr style={{ borderTop: "2px solid var(--border)", background: "var(--sunken)" }}>
+                <td style={{ padding: "12px 14px", fontFamily: "var(--f-body)", fontWeight: 700, fontSize: 14, color: "var(--ink-0)" }}>6-Month Total</td>
+                <td /><td />
+                {[2232, coll].map((v, j) => (
+                  <td key={j} className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 700, color: j === 1 ? "var(--am-7)" : "var(--ink-0)" }}>{v.toLocaleString()}</td>
+                ))}
+                <td className="data" style={{ padding: "12px 14px", textAlign: "right", fontSize: 14, fontWeight: 700, color: "var(--ink-0)" }}>26.4 camps</td>
+                <td /><td />
+              </tr>
+            </tfoot>
           </table>
         </div>
       </div>

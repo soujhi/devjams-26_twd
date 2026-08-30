@@ -46,6 +46,8 @@ export interface PlannerRow {
   collect: number;
   camps: number;
   dir: 'up' | 'dn' | 'hold';
+  camp_window?: string;
+  explanation?: string;
 }
 
 export interface KPIItem {

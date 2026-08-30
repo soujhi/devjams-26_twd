@@ -74,6 +74,8 @@ class CollectionPlanRow(BaseModel):
     collect: int
     camps: float
     dir: str  # up | dn | hold
+    camp_window: Optional[str] = None
+    explanation: Optional[str] = None
 
 class NABHReport(BaseModel):
     wastage_rate: str = "3.8%"
