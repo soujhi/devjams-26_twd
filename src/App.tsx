@@ -403,19 +403,34 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
   const [confirmed, setConfirmed] = useState(false);
   const [rec, setRec] = useState<{ verb: string; quantity: number; order_point: number; drivers: { dir: string; text: string; delta: string }[] } | null>(null);
 
+  const [isAdjusting, setIsAdjusting] = useState(false);
+  const [customQty, setCustomQty] = useState<number | null>(null);
+  const [adjustReason, setAdjustReason] = useState("Anticipating emergency trauma procedure");
+
   useEffect(() => {
     fetchRecommendation().then(data => {
-      if (data) setRec(data);
+      if (data) {
+        setRec(data);
+        setCustomQty(data.quantity);
+      }
     });
   }, []);
 
   const actionVerb = rec ? rec.verb : "COLLECT";
-  const actionQty = rec ? rec.quantity : 16;
+  const defaultQty = rec ? rec.quantity : 16;
+  const actionQty = customQty !== null ? customQty : defaultQty;
   const driversList = rec && rec.drivers && rec.drivers.length > 0 ? rec.drivers : DRIVERS;
   const expiringTonight = bands.find(b => b.days === 0)?.n || 9;
 
   const handleConfirm = async () => {
     setConfirmed(true);
+    setIsAdjusting(false);
+    await confirmRecommendation('ggh-chennai', actionVerb, actionQty);
+  };
+
+  const handleSaveAdjustment = async () => {
+    setConfirmed(true);
+    setIsAdjusting(false);
     await confirmRecommendation('ggh-chennai', actionVerb, actionQty);
   };
 
@@ -505,11 +520,11 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
 
       <ShelfStrip bands={bands} onBand={onBand} />
 
-      <div style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: 14 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "310px 1fr", gap: 14 }}>
         <div style={{
           background: "var(--ink-0)", borderRadius: 12, overflow: "hidden",
           display: "flex", flexDirection: "column", position: "relative",
-          boxShadow: "var(--sh-raise)", padding: "22px 24px",
+          boxShadow: "var(--sh-raise)", padding: "22px 24px", justifyContent: "space-between"
         }}>
           <div style={{
             position: "absolute", left: 0, top: 0, bottom: 0, width: 4,
@@ -517,25 +532,75 @@ function DailyOps({ bands, forecast, onBand }: { bands: ShelfBand[]; forecast: F
           }} />
 
           <div>
-            <span className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>RECOMMENDED ACTION</span>
-            <div style={{ fontFamily: "var(--f-disp)", fontSize: 42, fontWeight: 700, color: "var(--am-4)", margin: "10px 0 6px" }}>{actionVerb}</div>
-            <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 14 }}>
-              <span className="data" style={{ fontSize: 62, fontWeight: 500, color: "#fff", lineHeight: 1 }}>{actionQty}</span>
-              <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)" }}>units</span>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <span className="eyebrow" style={{ color: "rgba(255,255,255,0.4)" }}>RECOMMENDED ACTION</span>
+              {customQty !== null && customQty !== defaultQty && (
+                <span style={{ fontSize: 10, fontWeight: 700, color: "var(--am-4)", background: "rgba(200,134,13,0.2)", padding: "2px 6px", borderRadius: 4 }}>
+                  MODIFIED
+                </span>
+              )}
             </div>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: "18px", marginBottom: 20 }}>
+
+            <div style={{ fontFamily: "var(--f-disp)", fontSize: 40, fontWeight: 700, color: "var(--am-4)", margin: "8px 0 4px" }}>{actionVerb}</div>
+            
+            {/* Interactive Quantity Display or Adjuster */}
+            {isAdjusting ? (
+              <div style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "12px", margin: "10px 0 14px" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 8, fontWeight: 600 }}>
+                  Adjust Target Units:
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <button
+                    onClick={() => setCustomQty(Math.max(0, actionQty - 1))}
+                    style={{ width: 34, height: 34, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+                    −
+                  </button>
+                  <span className="data" style={{ fontSize: 32, fontWeight: 700, color: "#fff", flex: 1, textAlign: "center" }}>
+                    {actionQty}
+                  </span>
+                  <button
+                    onClick={() => setCustomQty(actionQty + 1)}
+                    style={{ width: 34, height: 34, borderRadius: 6, background: "rgba(255,255,255,0.15)", border: "none", color: "#fff", fontWeight: 700, fontSize: 18, cursor: "pointer" }}>
+                    +
+                  </button>
+                </div>
+
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.6)", marginBottom: 4, fontWeight: 600 }}>
+                  Override Reason:
+                </div>
+                <select
+                  value={adjustReason} onChange={e => setAdjustReason(e.target.value)}
+                  style={{ width: "100%", padding: "7px 9px", background: "#10151C", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, fontSize: 11.5, color: "#fff", outline: "none", marginBottom: 10 }}>
+                  <option value="Anticipating emergency trauma procedure">Emergency trauma case expected</option>
+                  <option value="Mobile camp donor turnout adjustment">Mobile camp donor turnout buffer</option>
+                  <option value="Regional surge precaution">Regional surge precaution</option>
+                </select>
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 14 }}>
+                <span className="data" style={{ fontSize: 56, fontWeight: 500, color: "#fff", lineHeight: 1 }}>{actionQty}</span>
+                <span style={{ fontSize: 14, color: "rgba(255,255,255,0.35)" }}>units</span>
+              </div>
+            )}
+
+            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.4)", lineHeight: "18px", marginBottom: 16 }}>
               Order point calibrated to optimal fractile. Prevents shortages while eliminating expiry.
             </p>
           </div>
 
           {confirmed ? (
-            <div style={{ padding: "10px 14px", background: "rgba(28,104,72,0.25)", border: "1px solid rgba(28,104,72,0.4)", borderRadius: 7, color: "rgba(255,255,255,0.7)", fontWeight: 500, fontSize: 12.5 }}>
-              ✓ Confirmed by RK, 08:42
+            <div style={{ padding: "10px 14px", background: "rgba(28,104,72,0.25)", border: "1px solid rgba(28,104,72,0.4)", borderRadius: 7, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontSize: 12 }}>
+              ✓ Confirmed {customQty !== null && customQty !== defaultQty ? `(${actionQty} units adjusted)` : ""} by RK
+            </div>
+          ) : isAdjusting ? (
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={handleSaveAdjustment} style={{ flex: 1, padding: "10px 0", background: "var(--st-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 700, fontSize: 13, cursor: "pointer" }}>Save & Confirm</button>
+              <button onClick={() => setIsAdjusting(false)} style={{ padding: "10px 12px", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: 13, cursor: "pointer" }}>Cancel</button>
             </div>
           ) : (
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={handleConfirm} style={{ flex: 1, padding: "10px 0", background: "var(--am-6)", border: "none", borderRadius: 7, color: "#fff", fontWeight: 600, fontSize: 13.5, cursor: "pointer" }}>Confirm</button>
-              <button style={{ flex: 1, padding: "10px 0", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.6)", fontWeight: 500, fontSize: 13.5, cursor: "pointer" }}>Adjust</button>
+              <button onClick={() => setIsAdjusting(true)} style={{ flex: 1, padding: "10px 0", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 7, color: "rgba(255,255,255,0.8)", fontWeight: 500, fontSize: 13.5, cursor: "pointer" }}>Adjust ✎</button>
             </div>
           )}
         </div>
