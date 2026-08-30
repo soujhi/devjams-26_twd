@@ -1318,6 +1318,118 @@ function AnalyticsPage() {
 // ─── Reports Page ─────────────────────────────────────────────────────────────
 
 function ReportsPage() {
+  const handleExportPDF = () => {
+    const printWin = window.open('', '_blank');
+    if (!printWin) return;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>NABH Quality Indicator Audit Report - Govt. General Hospital, Chennai</title>
+        <style>
+          body { font-family: 'Segoe UI', Roboto, sans-serif; padding: 40px; color: #10151C; }
+          .header { display: flex; justify-content: space-between; border-bottom: 2px solid #C8860D; padding-bottom: 16px; margin-bottom: 24px; }
+          .title { font-size: 22px; font-weight: 700; color: #10151C; }
+          .sub { font-size: 13px; color: #5B6572; margin-top: 4px; }
+          .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+          .kpi-card { border: 1px solid #DDE2E8; border-top: 4px solid #1C6848; padding: 16px; border-radius: 8px; background: #F4F6F8; }
+          .kpi-label { font-size: 11px; text-transform: uppercase; color: #5B6572; font-weight: 700; letter-spacing: 0.05em; }
+          .kpi-val { font-size: 26px; font-weight: 700; color: #10151C; margin: 6px 0 2px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+          th, td { border: 1px solid #DDE2E8; padding: 10px 14px; text-align: left; font-size: 13px; }
+          th { background: #EAEDF1; font-weight: 700; }
+          .footer { margin-top: 48px; border-top: 1px solid #DDE2E8; padding-top: 16px; display: flex; justify-content: space-between; font-size: 12px; color: #5B6572; }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div>
+            <div class="title">GOVT. GENERAL HOSPITAL, CHENNAI</div>
+            <div class="sub">Department of Transfusion Medicine & Blood Bank</div>
+            <div class="sub"><strong>NABH Standard Quality Indicator Performance Audit Report</strong></div>
+          </div>
+          <div style="text-align: right;">
+            <div style="font-size: 12px; color: #5B6572;">Report Date: ${new Date().toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+            <div style="font-size: 12px; color: #5B6572;">Audit Period: 12-Month Rolling Window</div>
+            <div style="font-size: 12px; font-weight: 700; color: #1C6848; margin-top: 4px;">✓ Status: NABH Compliant</div>
+          </div>
+        </div>
+
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-label">Wastage Rate</div>
+            <div class="kpi-val">3.8%</div>
+            <div style="font-size: 11px; color: #1C6848; font-weight: 600;">↓ Reduced from 9.6% baseline</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Shortage Rate</div>
+            <div class="kpi-val">3.6%</div>
+            <div style="font-size: 11px; color: #1C6848; font-weight: 600;">Optimal Target Achieved</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Emergency TAT</div>
+            <div class="kpi-val">28 min</div>
+            <div style="font-size: 11px; color: #1C6848; font-weight: 600;">Within 30-min Target</div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-label">Issue Rate</div>
+            <div class="kpi-val">99.4%</div>
+            <div style="font-size: 11px; color: #1C6848; font-weight: 600;">High Utilization Rate</div>
+          </div>
+        </div>
+
+        <h3 style="font-size: 16px; margin-bottom: 12px; color: #10151C;">12-Month Wastage Reduction Performance Trend</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>Monthly Wasted Units</th>
+              <th>Monthly Issued Units</th>
+              <th>Wastage Rate (%)</th>
+              <th>NABH Benchmark Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Oct 2025</td><td>42</td><td>438</td><td>9.6%</td><td>Baseline</td></tr>
+            <tr><td>Nov 2025</td><td>38</td><td>431</td><td>8.8%</td><td>Improving</td></tr>
+            <tr><td>Dec 2025</td><td>34</td><td>430</td><td>7.9%</td><td>Improving</td></tr>
+            <tr><td>Jan 2026</td><td>30</td><td>422</td><td>7.1%</td><td>Improving</td></tr>
+            <tr><td>Feb 2026</td><td>27</td><td>421</td><td>6.4%</td><td>Improving</td></tr>
+            <tr><td>Mar 2026</td><td>24</td><td>414</td><td>5.8%</td><td>Improving</td></tr>
+            <tr><td>Apr 2026</td><td>21</td><td>403</td><td>5.2%</td><td>Improving</td></tr>
+            <tr><td>May 2026</td><td>19</td><td>404</td><td>4.7%</td><td>NABH Target Reached</td></tr>
+            <tr><td>Jun 2026</td><td>17</td><td>395</td><td>4.3%</td><td>NABH Compliant</td></tr>
+            <tr><td>Jul 2026</td><td>16</td><td>390</td><td>4.1%</td><td>NABH Compliant</td></tr>
+            <tr><td>Aug 2026</td><td>15</td><td>385</td><td>3.9%</td><td>NABH Compliant</td></tr>
+            <tr><td>Sep 2026</td><td>14</td><td>368</td><td>3.8%</td><td>NABH Compliant</td></tr>
+          </tbody>
+        </table>
+
+        <h3 style="font-size: 16px; margin-top: 28px; margin-bottom: 12px; color: #10151C;">WHO 2009 Clinical Transfusion Concordance Summary</h3>
+        <p style="font-size: 13px; color: #5B6572; line-height: 20px;">
+          100% of hospital requisitions evaluated against WHO 2009 Dengue Clinical Practice Guidelines. 
+          Automated review flag rate: <strong>4.2%</strong>. Overrides logged with documented clinical rationale.
+        </p>
+
+        <div class="footer">
+          <div>Authorized Signatory: <strong>Dr. R. Kumar</strong> (Blood Bank Officer)</div>
+          <div>PlateletIQ Quality Audit Engine v1.0</div>
+        </div>
+
+        <script>
+          window.onload = function() {
+            window.print();
+          }
+        </script>
+      </body>
+      </html>
+    `;
+
+    printWin.document.write(htmlContent);
+    printWin.document.close();
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }}>
@@ -1377,7 +1489,14 @@ function ReportsPage() {
       </div>
 
       <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <button style={btn.sec}>Export PDF for transfusion committee</button>
+        <button onClick={handleExportPDF} style={{
+          padding: "11px 20px", background: "var(--ink-0)", color: "#fff",
+          border: "none", borderRadius: 8, fontFamily: "var(--f-body)",
+          fontSize: 13.5, fontWeight: 600, cursor: "pointer",
+          boxShadow: "0 4px 12px rgba(16,21,28,0.2)"
+        }}>
+          📄 Export Official NABH PDF Audit Report
+        </button>
       </div>
     </div>
   );
